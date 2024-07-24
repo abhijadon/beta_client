@@ -202,14 +202,12 @@ const UpdatePaymentForm = ({ entity, id, recordDetails, onCloseModal }) => {
 
     // Get status options based on the role
     const statusOptions = getStatusOptions(role);
-
     useEffect(() => {
         if (isSuccess) {
             setSuccess(true);
             onCloseModal();
         }
     }, [isSuccess]);
-
 
     return (
         <><Form

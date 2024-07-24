@@ -43,7 +43,6 @@ export default function DataTable({ config, extra = [] }) {
   let { entity, dataTableColumns, searchConfig } = config;
   const { result: listResult, isLoading: listIsLoading } = useSelector(selectListItems);
   const { items: dataSource, pagination } = listResult;
-  console.log(pagination)
   const { erpContextAction } = useErpContext();
   const { modal } = erpContextAction;
   const [statuses, setStatuses] = useState([]);

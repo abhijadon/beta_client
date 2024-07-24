@@ -39,8 +39,7 @@ const Index = ({ onClose, onFormSubmit }) => {
         const formData = new FormData();
         formData.append('university', values.university);
         formData.append('course', values.course || ''); // Handle undefined values by setting empty string
-        formData.append('electives', values.elective || ''); // Handle undefined values by setting empty string
-
+        formData.append('electives', values.elective || '');
         if (values.brochure) {
             values.brochure.forEach(file => {
                 formData.append('brochure', file.originFileObj, file.originFileObj.name);
@@ -63,9 +62,10 @@ const Index = ({ onClose, onFormSubmit }) => {
                     'Content-Type': 'multipart/form-data'
                 }
             });
+
             if (response.data.success) {
                 message.success(response.data.message);
-                if (onFormSubmit) onFormSubmit(response.data.result); // Pass the uploaded files to onFormSubmit
+                if (onFormSubmit) onFormSubmit();
                 if (onClose) onClose();
                 form.resetFields();
             } else {

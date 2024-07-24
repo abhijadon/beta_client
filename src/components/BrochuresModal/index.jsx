@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Select, message, Spin, Image, Space, Button, Popconfirm } from 'antd';
 import axios from 'axios';
-import {
-    DownloadOutlined, DeleteOutlined
-} from '@ant-design/icons';
+import { DownloadOutlined, DeleteOutlined } from '@ant-design/icons';
 import { MdOutlineFileDownload } from 'react-icons/md';
 
 const Index = () => {
@@ -15,21 +13,16 @@ const Index = () => {
         course: '',
         electives: '',
     });
+
     const onDownload = (url) => {
-        // Create a temporary link element
         const link = document.createElement('a');
         link.href = url;
         link.download = true;
-
-        // Trigger the click event on the link to start the download
         document.body.appendChild(link);
         link.click();
-
-        // Clean up
         document.body.removeChild(link);
     };
 
-    // Fetch filter options from the API
     useEffect(() => {
         const fetchFilterOptions = async () => {
             try {
@@ -52,13 +45,10 @@ const Index = () => {
         fetchFilterOptions();
     }, []);
 
-    // Fetch filtered brochures from the API
     const fetchBrochures = async (filters) => {
         setLoading(true);
         try {
-            const response = await axios.get('/brochures/list', {
-                params: filters,
-            });
+            const response = await axios.get('/brochures/list', { params: filters });
             const result = response.data;
             if (result) {
                 setBrochures(result.brochures);
@@ -85,8 +75,21 @@ const Index = () => {
     };
 
     const handleDownload = (url) => {
-        // Implement download logic here
         window.open(url, '_blank');
+    };
+
+    const handleDelete = async (fileUrl, university, course, electives) => {
+        try {
+            const response = await axios.post('/brochures/delete', { fileUrl, university, course, electives });
+            if (response.data.success) {
+                message.success(response.data.message);
+                setBrochures(brochures.filter(brochure => brochure.downloadURL !== fileUrl));
+            } else {
+                throw new Error('Unexpected response format');
+            }
+        } catch (error) {
+            message.error(error.response?.data?.message || 'Delete failed');
+        }
     };
 
     const handleReset = () => {
@@ -163,6 +166,14 @@ const Index = () => {
                                             cancelText="No"
                                         >
                                             <Button className="bg-transparent text-blue-600 border-none text-xl hover:text-blue-700" icon={<MdOutlineFileDownload />} />
+                                        </Popconfirm>
+                                        <Popconfirm
+                                            title="Are you sure you want to delete this file?"
+                                            onConfirm={() => handleDelete(brochure.downloadURL, brochure.university, brochure.course, brochure.electives)}
+                                            okText="Yes"
+                                            cancelText="No"
+                                        >
+                                            <Button className="bg-transparent text-red-600 border-none text-xl hover:text-red-700" icon={<DeleteOutlined />} />
                                         </Popconfirm>
                                         <p className='font-semibold'>{brochure.university}</p>
                                         <p className='text-sm'>{brochure.course}</p>

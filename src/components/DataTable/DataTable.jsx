@@ -189,17 +189,11 @@ export default function DataTable({ config, extra = [] }) {
     setShowUploadDocumentDrawer(false);
     setRecordForUploadDocument(null);
   };
-
-  const handleDelete = (record) => {
-    Modal.confirm({
-      title: 'Are you sure you want to delete this item?',
-      onOk: () => {
-        dispatch(crud.delete({ actionType: 'delete', data: record, entity }));
-        dispatcher();
-      }
-    });
+  
+   const handleDelete = (record) => {
+    dispatch(crud.currentAction({ actionType: 'delete', data: record }));
+    modal.open();
   };
-
   const handleUpdatePassword = (record) => {
     dispatch(crud.currentItem({ data: record }));
     dispatch(crud.currentAction({ actionType: 'update', data: record }));
