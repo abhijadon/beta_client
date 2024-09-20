@@ -8,17 +8,7 @@ const { Option } = Select;
 const PermissionForm = ({ onClose, onFormSubmit }) => {
     const onFinish = async (formValues) => {
         try {
-            const response = await axios.post(
-                `${import.meta.env.VITE_BACKEND_SERVER}api/menu/create`,
-                formValues,
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${Cookies.get('token')}`,
-                    },
-                }
-            );
-
+            const response = await axios.post(`/menu/create`,formValues,);
             if (response.status === 201) {
                 message.success('Permission created successfully');
                 onFormSubmit(); // Trigger parent component's onFormSubmit function
@@ -56,6 +46,7 @@ const PermissionForm = ({ onClose, onFormSubmit }) => {
                 <Select mode="multiple" placeholder="Select options">
                     <Option value="Dashboard">Dashboard</Option>
                     <Option value="Application">Application</Option>
+                    <Option value="Alumni">Alumni</Option>
                     <Option value="Payment">Payment</Option>
                     <Option value="Teams">Teams</Option>
                     <Option value="Users">Users</Option>

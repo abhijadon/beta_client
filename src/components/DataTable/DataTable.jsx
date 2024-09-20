@@ -92,9 +92,12 @@ export default function DataTable({ config, extra = [] }) {
   const [selectedEnrolledWhatsApp, setSelectedEnrolledWhatsApp] = useState(null);
   const [selectedLMS, setSelectedLMS] = useState(null);
   const isFilter = ['admin', 'subadmin', 'manager', 'supportiveassociate', 'teamleader'].includes(currentAdmin?.role);
+
   const { data: uniqueOptions } = useFetch(() =>
     request.filter({ entity: 'lead' })
   );
+
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   useEffect(() => {
     if (uniqueOptions) {
@@ -189,11 +192,24 @@ export default function DataTable({ config, extra = [] }) {
     setShowUploadDocumentDrawer(false);
     setRecordForUploadDocument(null);
   };
-  
-   const handleDelete = (record) => {
+
+  const handleDelete = (record) => {
     dispatch(crud.currentAction({ actionType: 'delete', data: record }));
     modal.open();
   };
+
+  const handleAlumni = async () => {
+    try {
+      for (let id of selectedRowKeys) {
+        await request.transfer({ entity: 'alumni' });
+      }
+      setSelectedRowKeys([]);
+      dispatcher();
+    } catch (error) {
+      console.error('Error transferring alumni:', error);
+    }
+  };
+
   const handleUpdatePassword = (record) => {
     dispatch(crud.currentItem({ data: record }));
     dispatch(crud.currentAction({ actionType: 'update', data: record }));
@@ -405,7 +421,6 @@ export default function DataTable({ config, extra = [] }) {
       controller.abort();
     };
   }, []);
-
 
   const handleFilterChange = (filterType, value) => {
     switch (filterType) {
@@ -935,14 +950,18 @@ export default function DataTable({ config, extra = [] }) {
                       <span>Filters</span>
                     </div>
                   </Dropdown>
+                  <Button title='Export excel' onClick={handleAlumni} className='text-red-800 bg-red-300 hover:text-red-700 hover:bg-red-100 border-none hover:border-none rounded-none'> Alumni</Button>
                   <Button title='Export excel' onClick={exportToExcel} className='text-green-800 bg-green-300 hover:text-green-700 hover:bg-green-100 border-none hover:border-none' icon={<PiMicrosoftExcelLogo />}> Excel</Button>
                 </>
               ) : null}
-
               <AddNewItem key="addNewItem" config={config} />
             </div>
           </div>
           <Table
+            rowSelection={{
+              selectedRowKeys,
+              onChange: setSelectedRowKeys,
+            }}
             columns={dataTableColumns}
             rowKey={(item) => item._id}
             loading={listIsLoading}
@@ -959,8 +978,9 @@ export default function DataTable({ config, extra = [] }) {
         footer={null}
         width={500}
       >
-        {updatePaymentRecord && <UpdatePaymentForm entity="lead" id={updatePaymentRecord?._id} recordDetails={updatePaymentRecord} onCloseModal={handleSuccessUpdate} />}
+        {updatePaymentRecord && <UpdatePaymentForm entity="lead" id={updatePaymentRecord?._id} recordDetails={updatePaymentRecord} onCloseModal={handleSuccessUpdate} refreshTable={dispatcher} />}
       </Drawer>
+
       <Drawer
         title="Upload Document"
         open={showUploadDocumentDrawer}

@@ -46,6 +46,7 @@ const EditPermission = ({ onClose, onFormSubmit, selectedRecord }) => {
                 <Select mode="multiple" placeholder="Select options">
                     <Option value="Dashboard">Dashboard</Option>
                     <Option value="Application">Application</Option>
+                    <Option value="Alumni">Alumni</Option>
                     <Option value="Payment">Payment</Option>
                     <Option value="Teams">Teams</Option>
                     <Option value="Users">Users</Option>

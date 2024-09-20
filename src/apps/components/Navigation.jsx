@@ -9,7 +9,7 @@ import {
   CreditCardOutlined,
   MenuOutlined,
 } from '@ant-design/icons';
-import { PiMicrosoftTeamsLogoLight } from 'react-icons/pi';
+import { PiMicrosoftTeamsLogoLight, PiStudentFill } from 'react-icons/pi';
 import logoIcon from '@/style/images/sodelogo.png';
 import logoText from '@/style/images/sodeicon.png';
 import { FaUsersRays } from "react-icons/fa6";
@@ -70,6 +70,10 @@ function Sidebar({ menuOptions }) {
         case 'Application':
           icon = <UserAddOutlined />;
           path = '/application';
+          break;
+        case 'Alumni':
+          icon = <PiStudentFill />;
+          path = '/alumni';
           break;
         case 'Payment':
           icon = <CreditCardOutlined />;

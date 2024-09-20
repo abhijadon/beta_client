@@ -1,27 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import { Select, message, Spin, Image, Space, Button, Popconfirm } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Select, message, Spin, Button, Popconfirm } from 'antd';
 import axios from 'axios';
-import { DownloadOutlined, DeleteOutlined } from '@ant-design/icons';
 import { MdOutlineFileDownload } from 'react-icons/md';
+import { DeleteOutlined } from '@ant-design/icons';
+
+// Initial state for filters
+const initialFilters = {
+    university: '',
+    course: '',
+    electives: '',
+};
 
 const Index = () => {
     const [filterOptions, setFilterOptions] = useState({ universities: [], courses: [], electives: [] });
     const [brochures, setBrochures] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [filters, setFilters] = useState({
-        university: '',
-        course: '',
-        electives: '',
-    });
-
-    const onDownload = (url) => {
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = true;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    };
+    const [filters, setFilters] = useState(initialFilters);
 
     useEffect(() => {
         const fetchFilterOptions = async () => {
@@ -93,11 +87,7 @@ const Index = () => {
     };
 
     const handleReset = () => {
-        setFilters({
-            university: '',
-            course: '',
-            electives: '',
-        });
+        setFilters(initialFilters);
     };
 
     return (
@@ -146,41 +136,38 @@ const Index = () => {
                 ) : brochures.length > 0 ? (
                     brochures.map((brochure, index) => (
                         <div key={index} className='text-center'>
-                            <Image.PreviewGroup items={brochures.map(brochure => brochure.downloadURL)} preview={
-                                <Space size={12} className="toolbar-wrapper">
-                                    <DownloadOutlined onClick={() => handleDownload(brochure.downloadURL)} />
-                                </Space>
-                            }>
-                                <div className='text-center'>
-                                    <Image
-                                        width={250}
-                                        height={180}
-                                        src={brochure.downloadURL}
-                                        alt={`Brochure ${index}`}
-                                    />
-                                    <div className='mt-2 flex gap-4 items-center justify-center'>
-                                        <Popconfirm
-                                            title="Are you sure you want to download this image?"
-                                            onConfirm={() => onDownload(brochure.downloadURL)}
-                                            okText="Yes"
-                                            cancelText="No"
-                                        >
-                                            <Button className="bg-transparent text-blue-600 border-none text-xl hover:text-blue-700" icon={<MdOutlineFileDownload />} />
-                                        </Popconfirm>
-                                        <Popconfirm
-                                            title="Are you sure you want to delete this file?"
-                                            onConfirm={() => handleDelete(brochure.downloadURL, brochure.university, brochure.course, brochure.electives)}
-                                            okText="Yes"
-                                            cancelText="No"
-                                        >
-                                            <Button className="bg-transparent text-red-600 border-none text-xl hover:text-red-700" icon={<DeleteOutlined />} />
-                                        </Popconfirm>
+                            <div className='text-center'>
+                                <iframe
+                                    src={brochure.downloadURL}
+                                    width="250"
+                                    height="180"
+                                    title={`Brochure ${index}`}
+                                    style={{ border: 'none' }}
+                                />
+                                <div className='mt-2 flex gap-4 items-center justify-center'>
+                                    <Popconfirm
+                                        title="Are you sure you want to download this PDF?"
+                                        onConfirm={() => handleDownload(brochure.downloadURL)}
+                                        okText="Yes"
+                                        cancelText="No"
+                                    >
+                                        <Button className="bg-transparent text-blue-600 border-none text-xl hover:text-blue-700" icon={<MdOutlineFileDownload />} />
+                                    </Popconfirm>
+                                    <Popconfirm
+                                        title="Are you sure you want to delete this file?"
+                                        onConfirm={() => handleDelete(brochure.downloadURL, brochure.university, brochure.course, brochure.electives)}
+                                        okText="Yes"
+                                        cancelText="No"
+                                    >
+                                        <Button className="bg-transparent text-red-600 border-none text-xl hover:text-red-700" icon={<DeleteOutlined />} />
+                                    </Popconfirm>
+                                    <div className='flex flex-col'>
                                         <p className='font-semibold'>{brochure.university}</p>
                                         <p className='text-sm'>{brochure.course}</p>
                                         <p className='text-sm'>{brochure.electives}</p>
                                     </div>
                                 </div>
-                            </Image.PreviewGroup>
+                            </div>
                         </div>
                     ))
                 ) : (

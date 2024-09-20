@@ -76,9 +76,13 @@ const request = {
     }
   },
 
-  updatePayment: async ({ entity, id, jsonData }) => {
+  updatePayment: async ({ entity, id, formdata }) => {
     try {
-      const response = await axios.put(`${entity}/updatePayment/${id}`, jsonData);
+      const response = await axios.put(`${entity}/updatePayment/${id}`, formdata, {
+         headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       successHandler(response, {
         notifyOnSuccess: true,
         notifyOnFailed: true,
@@ -268,6 +272,20 @@ const request = {
       return errorHandler(error);
     }
   },
+  transfer: async ({ entity, id }) => {
+    try {
+      const response = await axios.post(`${entity}/transfer/${id}`);
+      successHandler(response, {
+        notifyOnSuccess: true,
+        notifyOnFailed: true,
+      });
+      return response.data;
+    } catch (error) {
+      return errorHandler(error);
+    }
+  },
 };
+
+
 
 export default request;

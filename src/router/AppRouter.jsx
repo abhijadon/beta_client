@@ -36,7 +36,7 @@ import Offer from '@/pages/Offer/index';
 import OfferCreate from '@/pages/Offer/OfferCreate';
 import OfferRead from '@/pages/Offer/OfferRead';
 import CourseInfo from '@/pages/CourseInfo';
-
+import Alumni from '@/pages/Alumni';
 export default function AppRouter() {
   let element = useRoutes([
     {
@@ -116,8 +116,8 @@ export default function AppRouter() {
       element: <PaymentUpdate />,
     },
     {
-      path: '/employee',
-      element: <Employee />,
+      path: '/alumni',
+      element: <Alumni />,
     },
     {
       path: '/admin',

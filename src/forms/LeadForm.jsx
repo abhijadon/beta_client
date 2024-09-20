@@ -1,72 +1,34 @@
+import { Form, Input, Select, Radio, InputNumber } from 'antd';
+import useLanguage from '@/locale/useLanguage';
 import { useState, useEffect } from 'react';
-import { Form, Select, Input, Checkbox, Radio, notification, Upload, message, InputNumber } from 'antd';
-import { InboxOutlined } from '@ant-design/icons';
-import formData from './formData';
+import { useSelector } from 'react-redux';
+import { selectCurrentAdmin } from '@/redux/auth/selectors';
+import axios from 'axios';
 
-const { Option } = Select;
+const { TextArea } = Input;
 
-/* require message show on notification */
-const openNotification = (fieldName) => {
-  const capitalizedFieldName = fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
-  notification.error({
-    message: 'Field Validation',
-    description: `${capitalizedFieldName} is required.`,
-    placement: 'topLeft',
-  });
-};
-/* require message show on notification */
-export default function LeadForm() {
-  /* useState, useEffect uses condition */
+export default function EditForm() {
+  const translate = useLanguage();
+  const [form] = Form.useForm();
+  const [formData, setFormData] = useState(null);
   const [selectedInstitute, setSelectedInstitute] = useState(null);
   const [selectedUniversity, setSelectedUniversity] = useState(null);
-  const [selectedCourse, setSelectedCourse] = useState(null);
-  const [selectedPayment, setSelectedPayment] = useState(null);
-  const [studentId, setStudentId] = useState('');
-  const [selectedAdmissionType, setSelectedAdmissionType] = useState(null);
-  const [selectedSpecialization, setSelectedSpecialization] = useState(null);
-
-  const handleAdmissionTypeChange = (value) => {
-    setSelectedAdmissionType(value);
-  };
+  const currentAdmin = useSelector(selectCurrentAdmin);
+  const isAdmin = ['admin', 'subadmin', 'manager'].includes(currentAdmin?.role);
 
   useEffect(() => {
-    if (selectedInstitute && selectedUniversity) {
-      setStudentId(generateUniqueId());
-    } else {
-      setStudentId('');
-    }
-  }, [selectedInstitute, selectedUniversity]);
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:5001/api/form/list');
+        const formFields = response.data.data[0];
+        setFormData(formFields);
+      } catch (error) {
+        console.error('Failed to fetch data:', error);
+      }
+    };
 
-  const generateUniqueId = () => {
-    const min = 100000;
-    const max = 999999;
-    return String(Math.floor(Math.random() * (max - min - 1)) + min);
-  };
-  /* student id generate automatica */
-
-  /* handlechanges */
-  const handleInstituteChange = (value) => {
-    setSelectedInstitute(value);
-    setSelectedUniversity(null);
-  };
-
-  const handleUniversityChange = (value) => {
-    setSelectedUniversity(value);
-    setSelectedCourse(null);
-  };
-
-  const handleCourseChange = (value) => {
-    setSelectedCourse(value);
-  };
-
-  const handleSpecializationChange = (value) => {
-    setSelectedSpecialization(value);
-  };
-
-  const handlePaymentChange = (value) => {
-    setSelectedPayment(value);
-  };
-  /* handlechanges */
+    fetchData();
+  }, []);
 
   const restrictNumericInput = (e) => {
     const charCode = e.which ? e.which : e.keyCode;
@@ -75,237 +37,46 @@ export default function LeadForm() {
     }
   };
 
-  /* generate fields dynamic by selectedUniversity */
-
-  const generateFormItems = (fields) => {
+  const renderFields = (fields) => {
     return fields.map((field) => {
-      // Add a check to ensure that field.label is defined
-      const capitalizedLabel = field.label ? field.label.charAt(0).toUpperCase() + field.label.slice(1) : '';
-      switch (field.type) {
-        case 'studentId':
-          return (
-            <Form.Item
-              key={field.id}
-              label={capitalizedLabel}
-              name={field.name}
-              initialValue={generateUniqueId()}
-              rules={[
-                {
-                  required: field.required === 'require',
-                  validator: (_, value) => {
-                    return new Promise((resolve, reject) => {
-                      if (value || field.required !== 'require') {
-                        // If the value is not empty or the field is not required, resolve
-                        resolve();
-                      } else {
-                        // If the value is empty and the field is required, reject and show notification
-                        openNotification(field.label);
-                        reject(`${field.label} is required.`);
-                      }
-                    });
-                  },
-                },
-              ]}
-            >
-              <Input
-                placeholder="Generated automatically"
-                value={studentId}
-                disabled
-              />
-            </Form.Item>
-          );
-
-        case 'text':
-          return (
-            <Form.Item
-              key={field.id}
-              label={capitalizedLabel}
-              name={field.name}
-              rules={[
-                {
-                  required: field.required === 'require',
-                  validator: (_, value) => {
-                    return new Promise((resolve, reject) => {
-                      if (value || field.required !== 'require') {
-                        // If the value is not empty or the field is not required, resolve
-                        resolve();
-                      } else {
-                        // If the value is empty and the field is required, reject and show notification
-                        openNotification(field.label);
-                        reject(`${field.label} is required.`);
-                      }
-                    });
-                  },
-                },
-              ]}
-            >
-              <Input placeholder={field.place} />
-            </Form.Item>
-          );
+      switch (field.Type) {
         case 'email':
           return (
             <Form.Item
-              key={field.id}
-              label={capitalizedLabel}
-              name={field.name}
+              key={field._id}
+              label={translate(field.label_name)}
+              name={field.field_name}
               rules={[
-                {
-                  type: 'email',
-                  message: 'Please enter a valid email address',
-                  required: field.required === 'require',
-                },
-                {
-                  validator: (_, value) => {
-                    return new Promise((resolve, reject) => {
-                      if (!value && field.required === 'require') {
-                        // If the field is required and value is empty, reject and show notification
-                        openNotification(field.label);
-                        reject(`${field.label} is required.`);
-                      } else {
-                        // Otherwise, resolve
-                        resolve();
-                      }
-                    });
-                  },
-                },
+                { required: field.required, message: `${field.label_name} is required` }
               ]}
-              validateTrigger={['onChange', 'onBlur']}
             >
-              <Input placeholder={field.place} />
+              <Input type='email' placeholder={field.placeholder} />
+            </Form.Item>
+          );
+        case 'text':
+          return (
+            <Form.Item
+              key={field._id}
+              label={translate(field.label_name)}
+              name={field.field_name}
+              rules={[
+                { required: field.required, message: `${field.label_name} is required` }
+              ]}
+            >
+              <Input type='text' placeholder={field.placeholder} />
             </Form.Item>
           );
         case 'tel':
           return (
             <Form.Item
-              key={field.id}
-              label={capitalizedLabel}
-              name={field.name}
+              key={field._id}
+              label={translate(field.label_name)}
+              name={field.field_name}
               rules={[
-                {
-                  required: field.required === 'require',
-                  validator: (_, value) => {
-                    return new Promise((resolve, reject) => {
-                      if (value || field.required !== 'require') {
-                        // If the value is not empty or the field is not required, resolve
-                        resolve();
-                      } else {
-                        // If the value is empty and the field is required, reject and show notification
-                        openNotification(field.label);
-                        reject(`${field.label} is required.`);
-                      }
-                    });
-                  },
-                },
+                { required: field.required, message: `${field.label_name} is required` }
               ]}
             >
-              <InputNumber
-                placeholder={field.place}
-                style={{ width: '100%' }}
-                min={0}
-                onKeyPress={restrictNumericInput}
-              />
-            </Form.Item>
-          );
-        case 'select':
-          return (
-            <Form.Item
-              key={field.id}
-              label={field.label ? field.label.charAt(0).toUpperCase() + field.label.slice(1) : ''}
-              name={field.name}
-              rules={[
-                {
-                  required: field.required === 'require',
-                  validator: (_, value) => {
-                    return new Promise((resolve, reject) => {
-                      if (value || field.required !== 'require') {
-                        resolve();
-                      } else {
-                        openNotification(field.label);
-                        reject(`${field.label} is required.`);
-                      }
-                    });
-                  },
-                },
-              ]}
-            >
-              <Select
-                showSearch
-                optionFilterProp='children'
-                filterOption={(input, option) =>
-                  option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                }
-                placeholder={field.place}
-              >
-                {field.options.map((option) => (
-                  <Option key={option.value} value={option.value}>
-                    {option.label ? option.label.charAt(0).toUpperCase() + option.label.slice(1) : ''}
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
-          );
-        case 'date':
-          return (
-            <Form.Item
-              key={field.id}
-              label={capitalizedLabel}
-              name={field.name}
-              rules={[
-                {
-                  required: field.required === 'require',
-                  validator: (_, value) => {
-                    return new Promise((resolve, reject) => {
-                      if (value || field.required !== 'require') {
-                        // If the value is not empty or the field is not required, resolve
-                        resolve();
-                      } else {
-                        // If the value is empty and the field is required, reject and show notification
-                        openNotification(field.label);
-                        reject(`${field.label} is required.`);
-                      }
-                    });
-                  },
-                },
-              ]}
-            >
-              <Input
-                type="date"
-                placeholder={field.place}
-                className='uppercase'
-                max="9999-12-31" // Set the max date value to ensure only 4-digit years
-                onInput={(e) => {
-                  if (e.target.value.length > 10) {
-                    e.target.value = e.target.value.slice(0, 10);
-                  }
-                }}
-              />
-            </Form.Item>
-          );
-        case 'textarea':
-          return (
-            <Form.Item
-              key={field.id}
-              label={capitalizedLabel}
-              name={field.name}
-              rules={[
-                {
-                  required: field.required === 'require',
-                  validator: (_, value) => {
-                    return new Promise((resolve, reject) => {
-                      if (value || field.required !== 'require') {
-                        // If the value is not empty or the field is not required, resolve
-                        resolve();
-                      } else {
-                        // If the value is empty and the field is required, reject and show notification
-                        openNotification(field.label);
-                        reject(`${field.label} is required.`);
-                      }
-                    });
-                  },
-                },
-              ]}
-            >
-              <Input.TextArea rows={1} placeholder={field.place} />
+              <Input type='tel' placeholder={field.placeholder} />
             </Form.Item>
           );
         default:
@@ -313,260 +84,116 @@ export default function LeadForm() {
       }
     });
   };
-  /* generate fields dynamic by selectedUniversity */
+
   return (
-    <div>
-      <form className='grid grid-cols-4 gap-3'>
-        <Form.Item label="Select Institute" name={['customfields', 'institute_name']} >
-          <Select
-            showSearch
-            optionFilterProp='children'
-            filterOption={(input, option) =>
-              option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-            }
-            onChange={handleInstituteChange}
-            placeholder="--Select Institute--"
-          >
-            {formData.map((item) => (
-              <Option key={item.value} value={item.value}>
-                {item.label}
-              </Option>
-            ))}
-          </Select>
-        </Form.Item>
-        {selectedInstitute && (
-          <>
-            <Form.Item label="Select University" name={['customfields', 'university_name']} >
+    <>
+      {formData && (
+        <Form form={form} initialValues={formData}>
+          <div className='grid grid-cols-4 gap-3'>
+            <Form.Item
+              label={translate('Institute')}
+              name='institute'
+              rules={[{ required: true, message: 'Please select an institute' }]}
+            >
               <Select
                 showSearch
-                optionFilterProp='children'
-                filterOption={(input, option) =>
-                  option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                }
-                onChange={handleUniversityChange}
-                placeholder="--Select University--"
-              >
-                {formData
-                  .find((item) => item.value === selectedInstitute)
-                  .universities?.map((university) => (
-                    <Option key={university.value} value={university.value}>
-                      {university.label}
-                    </Option>
-                  ))}
-              </Select>
-            </Form.Item>
-            {/* selectedcourse and then show specialization */}
-            {selectedUniversity && (
-              <>
-                {formData
-                  .find((item) => item.value === selectedInstitute)
-                  .universities.find((university) => university.value === selectedUniversity)
-                  .fields[0]?.courses ? (
-                  <Form.Item label="Select Course" name={['education', 'course']}>
-                    <Select
-                      showSearch
-                      optionFilterProp='children'
-                      filterOption={(input, option) =>
-                        option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                      }
-                      onChange={handleCourseChange}
-                      placeholder="--Select Course--"
-                    >
-                      {formData
-                        .find((item) => item.value === selectedInstitute)
-                        .universities.find((university) => university.value === selectedUniversity)
-                        .fields[0]?.courses?.map((course) => (
-                          <Option key={course.value} value={course.value}>
-                            {course.label}
-                          </Option>
-                        ))}
-                    </Select>
-                  </Form.Item>
-                ) : null}
-                {selectedCourse && (
-                  <div>
-                    <Form.Item label="Select Specialization" name={['customfields', 'enter_specialization']}>
-                      <Select
-                        showSearch
-                        optionFilterProp='children'
-                        filterOption={(input, option) =>
-                          option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                        }
-                        placeholder="--Select Specialization--"
-                        onChange={handleSpecializationChange}
-                      >
-                        {formData
-                          .find((item) => item.value === selectedInstitute)
-                          .universities.find((university) => university.value === selectedUniversity)
-                          .fields[0]?.courses
-                          .find((course) => course.value === selectedCourse)
-                          ?.specializations?.map((specialization) => (
-                            <Option key={specialization.value} value={specialization.value}>
-                              {specialization.label}
-                            </Option>
-                          ))}
-                      </Select>
-                    </Form.Item>
-                  </div>
-                )}
-              </>
-            )}
-            {/* selectedcourse and then show specialization */}
-          </>
-        )}
-      </form>
-      {selectedUniversity && (
-        <div>
-          <form className='grid grid-cols-3 gap-3'>
-            {generateFormItems(
-              formData
-                .find((item) => item.value === selectedInstitute)
-                .universities.find((university) => university.value === selectedUniversity).fields
-            )}
-            {selectedUniversity && (
-              <>
-                <div>
-                  {/* Render admission type select */}
-                  {formData
-                    .find((item) => item.value === selectedInstitute)
-                    .universities.find((university) => university.value === selectedUniversity)
-                    .fields[1]?.admission_type ? (
-                    <Form.Item
-                      label="Select admission status"
-                      name={['customfields', 'admission_type']}
-                      className='grid col-span-1'
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please Select admission status",
-                        },
-                      ]}
-                    >
-                      <Select
-                        showSearch
-                        optionFilterProp='children'
-                        filterOption={(input, option) =>
-                          option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                        }
-                        onChange={handleAdmissionTypeChange}
-                        placeholder="--Select admission status--"
-                      >
-                        {formData
-                          .find((item) => item.value === selectedInstitute)
-                          .universities.find((university) => university.value === selectedUniversity)
-                          .fields[1]?.admission_type?.map((admission) => (
-                            <Option key={admission.value} value={admission.value}>
-                              {admission.label}
-                            </Option>
-                          ))}
-                      </Select>
-                    </Form.Item>
-                  ) : null}
-
-                  {/* Render payment select based on selected admission type */}
-                  {selectedAdmissionType && (
-                    <Form.Item
-                      label="Select payment status"
-                      name={['customfields', 'payment_type']}
-                      className='grid col-span-1'
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please Select admission status",
-                        },
-                      ]}
-                    >
-                      <Select
-                        onChange={handlePaymentChange}
-                        placeholder="--Select Payment--"
-                      >
-                        {/* Map over payment options based on selected admission type */}
-                        {formData
-                          .find((item) => item.value === selectedInstitute)
-                          .universities.find((university) => university.value === selectedUniversity)
-                          .fields[1]?.admission_type
-                          .find((admission) => admission.value === selectedAdmissionType)
-                          ?.payments.map((payment) => (
-                            <Option key={payment.value} value={payment.value}>
-                              {payment.label}
-                            </Option>
-                          ))}
-                      </Select>
-                    </Form.Item>
-                  )}
-
-                  {/* Render payment types based on selected payment option */}
-                  {selectedPayment && (
-                    <div>
-                      <Form.Item>
-                        {(formData
-                          .find((item) => item.value === selectedInstitute)
-                          .universities.find((university) => university.value === selectedUniversity)
-                          .fields[1]?.admission_type
-                          .find((admission) => admission.value === selectedAdmissionType)
-                          ?.payments.find((payment) => payment.value === selectedPayment)?.paymentType || []
-                        ).map((pay) => (
-                          <Form.Item
-                            key={pay.label}
-                            label={pay.label}
-                            name={pay.name}  // Use pay.name as the name
-                            rules={[
-                              {
-                                required: pay.required === 'require',
-                                message: `Please input ${pay.label}!`,
-                              },
-                            ]}
-                          >
-
-                            <InputNumber
-                              placeholder={pay.place} type={pay.type}
-                              style={{ width: '100%' }}
-                              min={0}
-                              onKeyPress={restrictNumericInput}
-                            />
-                          </Form.Item>
-                        ))}
-                      </Form.Item>
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
-            <Form.Item
-              label="Fee Documents"
-              name="feeDocument"
-              valuePropName="fileList"
-              getValueFromEvent={(e) => e.fileList}
-            >
-              <Upload.Dragger
-                multiple={true} // Allow multiple file upload
-                listType="picture"
-                accept=".png,.jpeg,.jpg,.pdf"
-                beforeUpload={(file) => {
-                  const isJpgOrPngOrPdf =
-                    file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'application/pdf';
-                  if (!isJpgOrPngOrPdf) {
-                    message.error('You can only upload JPG/PNG/PDF file!');
-                    return Upload.LIST_IGNORE;
-                  }
-                  const isLt2M = file.size / 1024 / 1024 < 2;
-                  if (!isLt2M) {
-                    message.error('File must be smaller than 2MB!');
-                    return Upload.LIST_IGNORE;
-                  }
-                  return false;
+                placeholder='Select an institute'
+                options={formData.institutes.map(institute => ({
+                  value: institute.name._id,
+                  label: institute.name.name
+                }))}
+                onChange={(value) => {
+                  setSelectedInstitute(value);
+                  setSelectedUniversity(null); // Reset university selection
+                  form.setFieldsValue({ university: null }); // Reset university field value
                 }}
-              >
-                <p className="ant-upload-drag-icon">
-                  <InboxOutlined />
-                </p>
-                <p className="ant-upload-text">Click or drag files to this area to upload</p>
-                <p className="ant-upload-hint">Support for multiple images and PDF files</p>
-              </Upload.Dragger>
+              />
             </Form.Item>
-          </form>
-        </div>
+
+            {selectedInstitute && (
+              <Form.Item
+                label={translate('University')}
+                name='university'
+                rules={[{ required: true, message: 'Please select a university' }]}
+              >
+                <Select
+                  showSearch
+                  placeholder='Select a university'
+                  options={formData.institutes
+                    .find(institute => institute.name._id === selectedInstitute)
+                    .universities.map(university => ({
+                      value: university.name._id,
+                      label: university.name.name
+                    }))}
+                  onChange={(value) => {
+                    setSelectedUniversity(value);
+                  }}
+                />
+              </Form.Item>
+            )}
+
+            {selectedUniversity && renderFields(
+              formData.institutes
+                .find(institute => institute.name._id === selectedInstitute)
+                .universities.find(university => university.name._id === selectedUniversity)
+                .fields
+            )}
+
+            <Form.Item
+              label={translate('status')}
+              name={['customfields', 'status']}
+              rules={[{ required: true, message: 'Status is required' }]}
+            >
+              <Select
+                showSearch
+                options={[
+                  { value: 'New', label: translate('New') },
+                  { value: 'Approved', label: translate('Approved') },
+                  { value: 'Processed', label: translate('Processed') },
+                  { value: 'Enrolled', label: translate('Enrolled') },
+                  { value: 'Correction', label: translate('Correction') },
+                  { value: 'Cancel', label: translate('Cancel') },
+                  { value: 'Refunded', label: translate('Refunded') },
+                  { value: 'Alumni', label: translate('Alumni') },
+                  { value: 'Connected', label: translate('Connected') },
+                ]}
+                onChange={(value) => setStatus(value)}
+              />
+            </Form.Item>
+
+            {status === 'Enrolled' && (
+              <Form.Item
+                label={translate('Enrollment Number')}
+                name={['customfields', 'enrollment']}
+                rules={[
+                  { required: status === 'Enrolled', message: 'Enrollment number is required for enrolled status' },
+                ]}
+              >
+                <Input placeholder='Enter enrollment number' />
+              </Form.Item>
+            )}
+
+            <Form.Item
+              label={translate('Remark')}
+              name={['customfields', 'remark']}
+            >
+              <TextArea rows={1} />
+            </Form.Item>
+
+            {isAdmin && (
+              <Form.Item
+                label={translate('LMS Status')}
+                name={['customfields', 'lmsStatus']}
+              >
+                <Radio.Group>
+                  <Radio value="yes">{translate('Yes')}</Radio>
+                  <Radio value="no">{translate('No')}</Radio>
+                </Radio.Group>
+              </Form.Item>
+            )}
+          </div>
+        </Form>
       )}
-    </div>
+    </>
   );
 }
