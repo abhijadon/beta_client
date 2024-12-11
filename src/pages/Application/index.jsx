@@ -6,7 +6,7 @@ import LeadForm from '@/forms/LeadForm';
 import useLanguage from '@/locale/useLanguage';
 import '@/style/tailwind.css'
 import EditForm from '../../forms/EdtiForm';
-import AddForm from '../../forms/AddPayment';
+import AddForm from '@/forms/AddPayment';
 import { useState } from 'react';
 export default function Lead() {
   const translate = useLanguage();
@@ -109,7 +109,7 @@ export default function Lead() {
     },
     {
       title: translate('gender'),
-      dataIndex: ['customfields', 'gender'],        
+      dataIndex: ['customfields', 'gender'],
       key: 'gender'
     },
     {

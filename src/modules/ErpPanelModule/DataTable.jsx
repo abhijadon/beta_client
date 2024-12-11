@@ -30,7 +30,7 @@ import { DOWNLOAD_BASE_URL } from '@/config/serverApiConfig';
 import { request } from '@/request';
 import { RiChatFollowUpLine } from 'react-icons/ri';
 import { GrHistory } from 'react-icons/gr';
-import HistoryModal from './HistoryModal';
+import HistoryModal from '@/components/HistoryModal';
 import CommentForm from '@/forms/comment';
 import { LiaFileDownloadSolid } from 'react-icons/lia';
 import { PiMicrosoftTeamsLogo } from 'react-icons/pi';
@@ -107,6 +107,25 @@ export default function DataTable({ config, extra = [] }) {
     }
   }, [uniqueOptions]);
 
+
+  const handleHistory = async (record) => {
+    try {
+      const historyData = await request.history({
+        entity: 'lead',
+        id: record.applicationId,
+      });
+      if (historyData && historyData.history) {
+        historyData.history.sort(
+          (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+        );
+      }
+      setHistoryData(historyData);
+      setShowHistoryModal(true);
+    } catch (error) {
+      console.error('Error fetching history data:', error);
+    }
+  };
+
   const items = [
     {
       label: translate('Show'),
@@ -168,23 +187,7 @@ export default function DataTable({ config, extra = [] }) {
     setCommentRecord(null);
   };
 
-  const handleHistory = async (record) => {
-    try {
-      const historyData = await request.history({
-        entity: 'payment',
-        id: record._id,
-      });
-      if (historyData && historyData.history) {
-        historyData.history.sort(
-          (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
-        );
-      }
-      setHistoryData(historyData);
-      setShowHistoryModal(true);
-    } catch (error) {
-      console.error('Error fetching history data:', error);
-    }
-  };
+
 
   dataTableColumns = [
     ...dataTableColumns,

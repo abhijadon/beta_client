@@ -8,6 +8,7 @@ import {
   UserAddOutlined,
   CreditCardOutlined,
   MenuOutlined,
+  LogoutOutlined,
 } from '@ant-design/icons';
 import { PiMicrosoftTeamsLogoLight, PiStudentFill } from 'react-icons/pi';
 import logoIcon from '@/style/images/sodelogo.png';
@@ -16,6 +17,8 @@ import { FaUsersRays } from "react-icons/fa6";
 import { CiUnread } from "react-icons/ci";
 import { GrCircleInformation } from "react-icons/gr";
 import { IoSettingsOutline } from "react-icons/io5";
+import { logout } from '@/redux/auth/actions';
+import { useDispatch } from 'react-redux';
 const { Sider } = Layout;
 
 export default function Navigation() {
@@ -46,18 +49,17 @@ export default function Navigation() {
   );
 }
 
-function Sidebar({ menuOptions }) {
+function Sidebar({ collapsible, menuOptions }) {
   const location = useLocation();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
-
+  const dispatch = useDispatch();
   const onCollapse = () => {
     setCollapsed(!collapsed);
   };
 
   const generateMenuItems = () => {
-    if (!menuOptions?.options) return []; // Return empty array if menuOptions not defined
-
+    if (!menuOptions?.options) return [];
     return menuOptions.options.map((option) => {
       let icon;
       let path;
@@ -112,12 +114,17 @@ function Sidebar({ menuOptions }) {
     });
   };
 
+  const handleLogout = () => {
+    dispatch(logout())
+    navigate('/login');
+  };
+
   return (
-    <Sider
-      collapsible
+    <Sider className='w-40'
+      collapsible={collapsible}
       collapsed={collapsed}
       onCollapse={onCollapse}
-      theme={'light'}
+      theme='light'
       style={{
         overflow: 'auto',
         height: '100vh',
@@ -139,10 +146,27 @@ function Sidebar({ menuOptions }) {
         )}
       </div>
       <Menu
-        mode="inline"
+        mode="vertical"
         items={generateMenuItems()}
         defaultSelectedKeys={[location.pathname]}
       />
+      <div
+        style={{
+          marginTop: 'auto',
+          padding: '10px',
+          textAlign: 'center',
+          position: 'absolute',
+          bottom: '10px',
+          width: '100%',
+        }}
+      >
+        <Button className='w-full bg-transparent text-black hover:text-black'
+          type="dashed"
+          onClick={handleLogout}
+        >
+          <LogoutOutlined /> <span>Logout</span>
+        </Button>
+      </div>
     </Sider>
   );
 }
@@ -162,12 +186,12 @@ function MobileSidebar({ menuOptions }) {
     <>
       <Button
         type="text"
-        size="large"
+        size="small"
         onClick={showDrawer}
         className="mobile-sidebar-btn"
         style={{ marginLeft: 25 }}
       >
-        <MenuOutlined style={{ fontSize: 18 }} />
+        <MenuOutlined style={{ fontSize: 10 }} />
       </Button>
       <Drawer
         width={200}

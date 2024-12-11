@@ -4,6 +4,7 @@ import CreateForm from '@/components/CreateForm';
 import UpdateForm from '@/components/UpdateForm';
 import DeleteModal from '@/components/DeleteModal';
 import SearchItem from '@/components/SearchItem';
+import AddPayment from '@/components/AddPayment';
 import DataTable from '@/components/DataTable/DataTable';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectCurrentItem } from '@/redux/crud/selectors';
@@ -11,13 +12,11 @@ import { crud } from '@/redux/crud/actions';
 import { useCrudContext } from '@/context/crud';
 import { CrudLayout } from '@/layout';
 
-function SidePanelTopContent({ config, formElements, withUpload }) {
+function SidePanelTopContent({ config, formElements, withUpload, addPayment }) {
   const { state } = useCrudContext();
   const { entityDisplayLabels } = config;
-
-  const { isReadBoxOpen, isEditBoxOpen } = state;
+  const { isReadBoxOpen, isEditBoxOpen, isPaymentBoxOpen } = state;
   const { result: currentItem } = useSelector(selectCurrentItem);
-  const dispatch = useDispatch();
 
   const [labels, setLabels] = useState('');
 
@@ -30,26 +29,12 @@ function SidePanelTopContent({ config, formElements, withUpload }) {
 
   return (
     <>
-      <Row>
-        <Col span={24}>
-          <div className="line"></div>
-        </Col>
-        <div className="space10"></div>
-      </Row>
-      <UpdateForm config={config} formElements={formElements} withUpload={withUpload} />
-    </>
+      {isPaymentBoxOpen && <AddPayment config={config} formElements={addPayment} withUpload={withUpload} />}
+      {isEditBoxOpen && <UpdateForm config={config} formElements={formElements} withUpload={withUpload} />}    </>
   );
 }
 
-function FixHeaderPanel({ config }) {
-  return (
-    <Row>
-      <SearchItem config={config} />
-    </Row>
-  );
-}
-
-function CrudModule({ config, createForm, updateForm, withUpload = false, filter }) {
+function CrudModule({ config, createForm, updateForm, withUpload = false, filter, addForm }) {
   const dispatch = useDispatch();
 
   useLayoutEffect(() => {
@@ -59,12 +44,11 @@ function CrudModule({ config, createForm, updateForm, withUpload = false, filter
   return (
     <CrudLayout
       config={config}
-      fixHeaderPanel={<FixHeaderPanel config={config} />}
       sidePanelBottomContent={
         <CreateForm config={config} formElements={createForm} withUpload={withUpload} />
       }
       sidePanelTopContent={
-        <SidePanelTopContent config={config} formElements={updateForm} withUpload={withUpload} />
+        <SidePanelTopContent config={config} formElements={updateForm} withUpload={withUpload} addPayment={addForm} />
       }
     >
       <DataTable config={config} extra={[]} filter={filter} />

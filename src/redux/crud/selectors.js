@@ -19,3 +19,8 @@ export const selectHistoryItem = createSelector([selectCrud], (crud) => crud.his
 export const selectDeletedItem = createSelector([selectCrud], (crud) => crud.delete);
 
 export const selectSearchedItems = createSelector([selectCrud], (crud) => crud.search);
+
+export const selectSelectedUpdatePayment = createSelector(
+  [selectCrud],
+  (crud) => crud.updatePayment
+);

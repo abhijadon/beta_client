@@ -30,12 +30,6 @@ export default function EditForm() {
     fetchData();
   }, []);
 
-  const restrictNumericInput = (e) => {
-    const charCode = e.which ? e.which : e.keyCode;
-    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
-      e.preventDefault();
-    }
-  };
 
   const renderFields = (fields) => {
     return fields.map((field) => {
@@ -99,8 +93,8 @@ export default function EditForm() {
                 showSearch
                 placeholder='Select an institute'
                 options={formData.institutes.map(institute => ({
-                  value: institute.name._id,
-                  label: institute.name.name
+                  value: institute.name?._id,
+                  label: institute.name?.name
                 }))}
                 onChange={(value) => {
                   setSelectedInstitute(value);
@@ -120,10 +114,10 @@ export default function EditForm() {
                   showSearch
                   placeholder='Select a university'
                   options={formData.institutes
-                    .find(institute => institute.name._id === selectedInstitute)
+                    .find(institute => institute.name?._id === selectedInstitute)
                     .universities.map(university => ({
-                      value: university.name._id,
-                      label: university.name.name
+                      value: university.name?._id,
+                      label: university.name?.name
                     }))}
                   onChange={(value) => {
                     setSelectedUniversity(value);

@@ -164,3 +164,13 @@ button,
   display: inline-block;
   vertical-align: middle;
 }
+
+.ant-drawer-body {
+  padding: 0px !important;
+}
+
+.truncate-option {
+  white-space: nowrap; /* Prevent wrapping */
+  overflow: hidden; /* Hide overflow */
+  text-overflow: ellipsis; /* Add ellipsis when the text overflows */
+}

@@ -9,7 +9,6 @@ import ErpApp from '@/apps/ErpApp';
 
 export default function ERP_SODEOs() {
   const { isLoggedIn } = useSelector(selectAuth);
-
   if (!isLoggedIn) {
     return (
       <Localization>

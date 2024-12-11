@@ -150,7 +150,7 @@ export default function DashboardModule() {
     };
 
     const filterRender = () => (
-        <div>
+        <Card>
             <div className='flex items-center space-x-2'>
                 <div>
                     <Select
@@ -160,7 +160,7 @@ export default function DashboardModule() {
                             option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                         }
                         placeholder="Select institute"
-                        className='w-60 h-10 capitalize'
+                        className='w-56 h-8 capitalize'
                         value={selectedInstitute}
                         onChange={(value) => setSelectedInstitute(value)}
                     >
@@ -177,7 +177,7 @@ export default function DashboardModule() {
                             option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                         }
                         placeholder="Select university"
-                        className='w-60 h-10 capitalize'
+                        className='w-56 h-8 capitalize'
                         value={selectedUniversity}
                         onChange={(value) => setSelectedUniversity(value)}
                     >
@@ -194,7 +194,7 @@ export default function DashboardModule() {
                             option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                         }
                         placeholder="Select status"
-                        className='w-60 h-10 capitalize'
+                        className='w-56 h-8 capitalize'
                         value={selectedStatus}
                         onChange={(value) => setSelectedStatus(value)}
                     >
@@ -211,7 +211,7 @@ export default function DashboardModule() {
                             option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                         }
                         placeholder="Select payment mode"
-                        className='w-60 h-10 capitalize'
+                        className='w-56 h-8 capitalize'
                         value={selectedPaymentMode}
                         onChange={(value) => setSelectedPaymentMode(value)}
                     >
@@ -230,7 +230,7 @@ export default function DashboardModule() {
                             option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                         }
                         placeholder="Select payment type"
-                        className='w-60 h-10 capitalize'
+                        className='w-56 h-8 capitalize'
                         value={selectedPaymentType}
                         onChange={(value) => setSelectedPaymentType(value)}
                     >
@@ -252,7 +252,7 @@ export default function DashboardModule() {
                         filterOption={(input, option) =>
                             option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                         }
-                        className='w-60 h-10 capitalize'
+                        className='w-56 h-8 capitalize'
                         value={selectedUserId}
                         onChange={(value) => setSelectedUserId(value)}
                     >
@@ -264,7 +264,7 @@ export default function DashboardModule() {
 
                 <div>
                     <RangePicker
-                        className='w-60 h-10 capitalize'
+                        className='w-56 h-8 capitalize'
                         format="YYYY-MM-DD"
                         onChange={handleDateRangeChange}
                     />
@@ -276,19 +276,18 @@ export default function DashboardModule() {
                     <BiReset />
                 </Button>
             </div>
-        </div>
+        </Card>
     );
 
     return (
         <>
-            <div>
+            <div className='mb-2'>
                 {filterRender()}
-                <div className="space30"></div>
             </div>
-            <div className='flex gap-4'>
+            <div className='flex gap-4 mb-3'>
                 {amountCards}
             </div>
-            <div className="space30"></div>
+
             <Row gutter={[32, 32]}>
                 <Col className="gutter-row" sm={{ span: 24 }} md={{ span: 24 }} lg={{ span: 16 }}>
                     <div>
@@ -306,9 +305,9 @@ export default function DashboardModule() {
             <div className="space30"></div>
             <Row gutter={[32, 32]}>
                 <Col className="gutter-row" sm={{ span: 24 }} md={{ span: 24 }} lg={{ span: 14 }}>
-        
-                        <CustomerPreviewCard />
-             
+
+                    <CustomerPreviewCard />
+
                 </Col>
                 <Col className="gutter-row bg-white" sm={{ span: 24 }} md={{ span: 24 }} lg={{ span: 10 }}>
                     <DataYear />

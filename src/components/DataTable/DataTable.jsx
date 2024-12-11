@@ -48,7 +48,7 @@ export default function DataTable({ config, extra = [] }) {
   const { isSuccess } = useSelector(selectCreatedItem);
   const dispatch = useDispatch();
   const { crudContextAction } = useCrudContext();
-  const { panel, collapsedBox, modal, editBox, advancedBox } = crudContextAction;
+  const { panel, collapsedBox, modal, editBox, advancedBox, paymentForm } = crudContextAction;
   const translate = useLanguage();
   const [statuses, setStatuses] = useState([]);
   const [institutes, setInstitutes] = useState([]);
@@ -178,9 +178,12 @@ export default function DataTable({ config, extra = [] }) {
     collapsedBox.open();
   };
 
-  const handleAddPayment = async (record) => {
-    setUpdatePaymentRecord(record);
-    setShowAddPaymentModal(true);
+  const handleAddPayment = (record) => {
+    dispatch(crud.currentItem({ data: record }));
+    dispatch(crud.currentAction({ actionType: 'updatePayment', data: record }));
+    paymentForm.open();
+    panel.open();
+    collapsedBox.open();
   };
 
   const handleUploadDocument = (record) => {
@@ -476,55 +479,56 @@ export default function DataTable({ config, extra = [] }) {
       q: searchQuery,
     };
 
-    if (selectedInstitute !== null) {
-      options.institute_name = selectedInstitute;
+    if (selectedInstitute && selectedInstitute.length > 0) {
+      options.institute_name = selectedInstitute.join(',');
     }
-    if (selectedUniversity !== null) {
-      options.university_name = selectedUniversity;
+    if (selectedUniversity && selectedUniversity.length > 0) {
+      options.university_name = selectedUniversity.join(',');
     }
-    if (selectedStatus !== null) {
-      options.status = selectedStatus;
+    if (selectedStatus && selectedStatus.length > 0) {
+      options.status = selectedStatus.join(',');
     }
-    if (selectedPaymentMode !== null) {
-      options.payment_mode = selectedPaymentMode;
+    if (selectedPaymentMode && selectedPaymentMode.length > 0) {
+      options.payment_mode = selectedPaymentMode.join(',');
     }
-    if (selectedPaymentType !== null) {
-      options.payment_type = selectedPaymentType;
+    if (selectedPaymentType && selectedPaymentType.length > 0) {
+      options.payment_type = selectedPaymentType.join(',');
     }
-    if (selectedInstallment !== null) {
-      options.installment_type = selectedInstallment;
+    if (selectedInstallment && selectedInstallment.length > 0) {
+      options.installment_type = selectedInstallment.join(',');
     }
-    if (selectedSession !== null) {
-      options.session = selectedSession;
+    if (selectedSession && selectedSession.length > 0) {
+      options.session = selectedSession.join(',');
     }
-    if (selectedPaymentStatus !== null) {
-      options.paymentStatus = selectedPaymentStatus;
+    if (selectedPaymentStatus && selectedPaymentStatus.length > 0) {
+      options.paymentStatus = selectedPaymentStatus.join(',');
     }
-    if (selectedWelcomeMail !== null) {
-      options.welcomeMail = selectedWelcomeMail;
+    if (selectedWelcomeMail && selectedWelcomeMail.length > 0) {
+      options.welcomeMail = selectedWelcomeMail.join(',');
     }
-    if (selectedWelcomeWhatsApp !== null) {
-      options.whatsappMessageStatus = selectedWelcomeWhatsApp;
+    if (selectedWelcomeWhatsApp && selectedWelcomeWhatsApp.length > 0) {
+      options.whatsappMessageStatus = selectedWelcomeWhatsApp.join(',');
     }
-    if (selectedEnrolledMail !== null) {
-      options.welcomeEnrolled = selectedEnrolledMail;
+    if (selectedEnrolledMail && selectedEnrolledMail.length > 0) {
+      options.welcomeEnrolled = selectedEnrolledMail.join(',');
     }
-    if (selectedEnrolledWhatsApp !== null) {
-      options.whatsappEnrolled = selectedEnrolledWhatsApp;
+    if (selectedEnrolledWhatsApp && selectedEnrolledWhatsApp.length > 0) {
+      options.whatsappEnrolled = selectedEnrolledWhatsApp.join(',');
     }
-    if (selectedLMS !== null) {
-      options.lmsStatus = selectedLMS;
+    if (selectedLMS && selectedLMS.length > 0) {
+      options.lmsStatus = selectedLMS.join(',');
     }
-    if (isTeam === 'true' && selectedUserName !== null) {
+    if (isTeam === 'true' && selectedUserName && selectedUserName.length > 0) {
       options.team = isTeam;
-      options.teamLeader = selectedUserName;
-    } else if (selectedUserName !== null) {
-      options.userId = selectedUserName;
+      options.teamLeader = selectedUserName.join(',');
+    } else if (selectedUserName && selectedUserName.length > 0) {
+      options.userId = selectedUserName.join(',');
     }
     if (startDate !== null && endDate !== null) {
       options.start_date = startDate.format('DD/MM/YYYY');
       options.end_date = endDate.format('DD/MM/YYYY');
     }
+
     dispatch(crud.list({ entity, options }));
   };
 
@@ -563,6 +567,7 @@ export default function DataTable({ config, extra = [] }) {
           <div className='flex flex-wrap items-center gap-2'>
             <Select
               showSearch
+              mode='multiple'
               allowClear
               optionFilterProp="children"
               filterOption={(input, option) =>
@@ -579,6 +584,7 @@ export default function DataTable({ config, extra = [] }) {
             </Select>
 
             <Select
+              mode='multiple'
               showSearch
               allowClear
               optionFilterProp="children"
@@ -591,12 +597,12 @@ export default function DataTable({ config, extra = [] }) {
               value={selectedUniversity}
             >
               {universities.map(university => (
-                <Select.Option key={university}>{university}</Select.Option>
+                <Select.Option key={university} className="truncate-option">{university}</Select.Option>
               ))}
             </Select>
-
             <Select
               showSearch
+              mode='multiple'
               allowClear
               optionFilterProp="children"
               filterOption={(input, option) =>
@@ -615,6 +621,7 @@ export default function DataTable({ config, extra = [] }) {
             <Select
               showSearch
               allowClear
+              mode='multiple'
               optionFilterProp="children"
               filterOption={(input, option) =>
                 option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -631,6 +638,7 @@ export default function DataTable({ config, extra = [] }) {
 
             <Select
               showSearch
+              mode='multiple'
               allowClear
               optionFilterProp="children"
               filterOption={(input, option) =>
@@ -648,6 +656,7 @@ export default function DataTable({ config, extra = [] }) {
 
             <Select
               showSearch
+              mode='multiple'
               allowClear
               optionFilterProp="children"
               filterOption={(input, option) =>
@@ -664,6 +673,7 @@ export default function DataTable({ config, extra = [] }) {
             </Select>
             <Select
               showSearch
+              mode='multiple'
               allowClear
               optionFilterProp="children"
               filterOption={(input, option) =>
@@ -682,6 +692,7 @@ export default function DataTable({ config, extra = [] }) {
               <Select
                 showSearch
                 allowClear
+                mode='multiple'
                 optionFilterProp="children"
                 filterOption={(input, option) =>
                   option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -696,7 +707,6 @@ export default function DataTable({ config, extra = [] }) {
                 ))}
               </Select>
             ) : null}
-
 
             <RangePicker
               onChange={handleDateRangeChange}

@@ -48,6 +48,7 @@ export default function CreateForm({ config, formElements, withUpload = false })
 
   const dispatchFormSubmission = (fieldsValue) => {
     const formData = new FormData();
+
     if (fieldsValue && entity !== 'lead') {
       dispatch(crud.create({ entity, jsonData: fieldsValue, withUpload: true }));
       return; // Exit the function
@@ -55,7 +56,6 @@ export default function CreateForm({ config, formElements, withUpload = false })
 
     // Get form values using form.getFieldsValue()
     fieldsValue = form.getFieldsValue();
-
     formData.append('full_name', fieldsValue.full_name);
     formData.append('lead_id', fieldsValue.lead_id);
     formData.append('contact.email', fieldsValue.contact.email);

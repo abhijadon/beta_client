@@ -57,7 +57,7 @@ export const crud = {
             total: parseInt(data.pagination.count, 10),
             countReceived: parseInt(data.pagination.paymentReceivedCount, 10),
             countRejected: parseInt(data.pagination.paymentRejectedCount, 10),
-            countApproved: parseInt(data.pagination.paymentApprovedCount, 10)
+            countApproved: parseInt(data.pagination.paymentApprovedCount, 10),
           },
         };
         dispatch({
@@ -136,7 +136,7 @@ export const crud = {
         });
       }
     },
-    
+
   update:
     ({ entity, id, jsonData, withUpload = false }) =>
     async (dispatch) => {
@@ -228,8 +228,8 @@ export const crud = {
         });
       }
     },
-     // Action creator for fetching history data
-    history:
+  // Action creator for fetching history data
+  history:
     ({ entity, id }) =>
     async (dispatch) => {
       dispatch({
@@ -258,5 +258,40 @@ export const crud = {
         });
       }
     },
-    
+  // Action creator for fetching payment data
+  updatePayment:
+    ({ entity, id, jsonData, withUpload = false }) =>
+    async (dispatch) => {
+      dispatch({
+        type: actionTypes.REQUEST_LOADING,
+        keyState: 'updatePayment',
+        payload: null,
+      });
+
+      let data = null;
+
+      if (withUpload) {
+        data = await request.updatePayment({ entity, id, jsonData });
+      } else {
+        data = await request.update({ entity, id, jsonData });
+      }
+
+      if (data.success === true) {
+        dispatch({
+          type: actionTypes.REQUEST_SUCCESS,
+          keyState: 'updatePayment',
+          payload: data.result,
+        });
+        dispatch({
+          type: actionTypes.CURRENT_ITEM,
+          payload: data.result,
+        });
+      } else {
+        dispatch({
+          type: actionTypes.REQUEST_FAILED,
+          keyState: 'updatePayment',
+          payload: null,
+        });
+      }
+    },
 };

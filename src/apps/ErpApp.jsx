@@ -2,7 +2,6 @@ import { useLayoutEffect, useState } from 'react';
 import { Layout } from 'antd';
 import { useAppContext } from '@/context/appContext';
 import Navigation from '@/apps/components/Navigation';
-import HeaderContent from '@/apps/components/HeaderContent';
 import { useDispatch } from 'react-redux';
 import { settingsAction } from '@/redux/settings/actions';
 import AppRouter from '@/router/AppRouter';
@@ -27,10 +26,8 @@ export default function ErpCrmApp() {
   return (
     <Layout hasSider>
       <Navigation onPathChange={handlePathChange} />
-
       {isMobile ? (
         <Layout style={{ marginLeft: 0 }}>
-          <HeaderContent />
           <Content
             style={{
               margin: '40px auto 30px',
@@ -44,14 +41,13 @@ export default function ErpCrmApp() {
           </Content>
         </Layout>
       ) : (
-        <Layout style={{ marginLeft: isNavMenuClose ? 100 : 220 }}>
-          <HeaderContent currentPath={currentPath} />
+        <Layout style={{ marginLeft: isNavMenuClose ? 100 : 200 }}>
           <Content
             style={{
-              margin: '30px auto 30px',
+              margin: '10px auto 10px',
               overflow: 'initial',
               width: '100%',
-              padding: '0px 10px 0px 0px',
+              padding: '10px 16px',
               maxWidth: isNavMenuClose ? 1700 : 1600,
             }}
           >

@@ -76,10 +76,10 @@ const request = {
     }
   },
 
-  updatePayment: async ({ entity, id, formdata }) => {
+  updatePayment: async ({ entity, id, jsonData }) => {
     try {
-      const response = await axios.put(`${entity}/updatePayment/${id}`, formdata, {
-         headers: {
+      const response = await axios.put(`${entity}/updatePayment/${id}`, jsonData, {
+        headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
@@ -285,7 +285,5 @@ const request = {
     }
   },
 };
-
-
 
 export default request;
