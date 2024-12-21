@@ -6,7 +6,7 @@ import { Row, Col } from 'antd';
 
 import UpdateForm from '@/components/UpdateForm';
 
-import DataTable from '@/components/DataTable/DataTable';
+import DataTable from '@/components/DataTable';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectCurrentItem } from '@/redux/crud/selectors';
 import { useCrudContext } from '@/context/crud';

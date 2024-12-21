@@ -110,13 +110,16 @@
 .login-form button[type='submit'] {
   margin-bottom: 20px;
 }
+
 .login-form-forgot {
   float: right;
 }
 .ant-avatar-lg {
   cursor: pointer;
 }
-.ant-select-show-search:where(.css-dev-only-do-not-override-2i2tap).ant-select:not(.ant-select-customize-input)
+.ant-select-show-search:where(.css-dev-only-do-not-override-2i2tap).ant-select:not(
+    .ant-select-customize-input
+  )
   .ant-select-selector {
   cursor: pointer;
 }
@@ -135,21 +138,21 @@
 }
 /* Add these styles to your CSS file */
 .custom-scrollbar {
-    overflow-y: auto;
-    max-height: 400px; /* Adjust the max-height as needed */
+  overflow-y: auto;
+  max-height: 400px; /* Adjust the max-height as needed */
 }
 
 .custom-scrollbar::-webkit-scrollbar {
-    width: 1px !important; /* Adjust the width of the scrollbar */
+  width: 1px !important; /* Adjust the width of the scrollbar */
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-    background-color: #3498db; /* Change the background color of the scrollbar thumb */
-    border-radius: 5px; /* Add rounded corners to the scrollbar thumb */
+  background-color: #3498db; /* Change the background color of the scrollbar thumb */
+  border-radius: 5px; /* Add rounded corners to the scrollbar thumb */
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-    background-color: #f1f1f1; /* Change the background color of the scrollbar track */
+  background-color: #f1f1f1; /* Change the background color of the scrollbar track */
 }
 /* Add this to your CSS */
 .sticky-header {
@@ -174,7 +177,7 @@
 .custom-scrollbar::-webkit-scrollbar-corner {
   background-color: #fff; /* Set the background color of the scrollbar corner */
 }
-.ant-card-head-title{
+.ant-card-head-title {
   color: blue;
   font-style: italic;
   font-weight: 200;
@@ -203,7 +206,6 @@
   scroll-behavior: smooth;
 }
 
-
 .ant-typography strong {
   font-weight: 700;
 }
@@ -217,7 +219,7 @@ h6 {
 }
 .ant-layout-header {
   padding: 10px 20px !important;
-    border-top-right-radius: 15px !important;
+  border-top-right-radius: 15px !important;
   margin-bottom: -16px;
 }
 
@@ -237,9 +239,9 @@ h6 {
   padding-bottom: 50px;
 }
 
-.ant-page-header {
+/* .ant-page-header {
   margin-top: -50px !important;
-}
+} */
 
 .tabContent :where(.css-dev-only-do-not-override-2i2tap).ant-tabs-right > .ant-tabs-content-holder,
 .tabContent
@@ -271,5 +273,3 @@ h6 {
     animation: App-logo-spin infinite 20s linear;
   }
 }
-
-

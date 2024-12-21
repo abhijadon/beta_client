@@ -2,29 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-button,
-[type='button'] {
-  background-color: #1677ff;
-  color: #ffffff;
-}
 
-button,
-[type='button']:hover {
-  background-color: #1677ffa3;
-  color: #ffffff !important;
-}
-
-button,
-[type='button'],
-[type='reset'],
-[type='submit'] {
-  background-color: #1677ff;
-  color: #ffffff;
-}
-
-.login-form button[type='submit'] {
-  background-color: #1677ff;
-}
 
 .logo {
   display: flex;
@@ -134,10 +112,6 @@ button,
   /* Adjust the size as needed */
 }
 
-.ant-drawer-header {
-  background-color: #d8f7c9;
-}
-
 .ant-drawer .ant-drawer-close {
   color: red !important;
   font-size: 20px;
@@ -145,7 +119,7 @@ button,
 
 .ant-drawer .ant-drawer-close:hover {
   color: red !important;
-  font-size: 22px;
+  font-size: 20px;
   background-color: transparent;
 }
 
@@ -163,10 +137,6 @@ button,
 .radio-group {
   display: inline-block;
   vertical-align: middle;
-}
-
-.ant-drawer-body {
-  padding: 0px !important;
 }
 
 .truncate-option {

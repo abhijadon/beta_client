@@ -1,60 +1,38 @@
 import { useLayoutEffect, useState } from 'react';
 import { Layout } from 'antd';
-import { useAppContext } from '@/context/appContext';
 import Navigation from '@/apps/components/Navigation';
-import { useDispatch } from 'react-redux';
-import { settingsAction } from '@/redux/settings/actions';
 import AppRouter from '@/router/AppRouter';
 import useIsMobile from '@/hooks/useIsMobile';
 
 export default function ErpCrmApp() {
   const { Content } = Layout;
-  const [currentPath, setCurrentPath] = useState('');
-  const { state: stateApp } = useAppContext();
-  const { isNavMenuClose } = stateApp;
-  const isMobile = useIsMobile();
+  const isMobile = useIsMobile(); // Hook to determine if the device is mobile
+  const [collapsed, setCollapsed] = useState(true); // Tracks the collapsed state of the nav menu
 
-  const dispatch = useDispatch();
-  useLayoutEffect(() => {
-    dispatch(settingsAction.list({ entity: 'setting' }));
-  }, []);
-
-  const handlePathChange = (path) => {
-    setCurrentPath(path);
+  const onCollapse = () => {
+    setCollapsed(!collapsed); // Toggle the collapsed state
   };
 
   return (
     <Layout hasSider>
-      <Navigation onPathChange={handlePathChange} />
-      {isMobile ? (
-        <Layout style={{ marginLeft: 0 }}>
-          <Content
-            style={{
-              margin: '40px auto 30px',
-              overflow: 'initial',
-              width: '100%',
-              padding: '0 25px',
-              maxWidth: 'none',
-            }}
-          >
-            <AppRouter />
-          </Content>
-        </Layout>
-      ) : (
-        <Layout style={{ marginLeft: isNavMenuClose ? 100 : 200 }}>
-          <Content
-            style={{
-              margin: '10px auto 10px',
-              overflow: 'initial',
-              width: '100%',
-              padding: '10px 16px',
-              maxWidth: isNavMenuClose ? 1700 : 1600,
-            }}
-          >
-            <AppRouter />
-          </Content>
-        </Layout>
-      )}
+      <Navigation
+        collapsed={collapsed}
+        onCollapse={onCollapse}
+      />
+      <Layout className='mt-2'>
+        <Content
+          style={{
+            margin: '60px auto',
+            overflow: 'initial',
+            width: '100%',
+            padding: isMobile ? '10px' : collapsed ? '10px 8px' : '10px 16px', // Adjust padding for mobile
+            maxWidth: '100%', // Keep width responsive
+            transition: 'all 0.3s ease', // Smoothly animate padding
+          }}
+        >
+          <AppRouter />
+        </Content>
+      </Layout>
     </Layout>
   );
 }

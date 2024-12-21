@@ -1,5 +1,5 @@
 import { EyeOutlined } from '@ant-design/icons';
-import DataTable from '@/components/DataTable/DataTable';
+import DataTable from '@/components/DataTable';
 
 import useLanguage from '@/locale/useLanguage';
 

@@ -3,11 +3,7 @@ import React from 'react'
 import CourseTable from "@/components/CourseDataTable"
 import { useLayoutEffect, useEffect, useState } from 'react';
 import { Row, Col } from 'antd';
-import CreateForm from '@/components/CreateForm';
 import UpdateForm from '@/components/UpdateForm';
-import DeleteModal from '@/components/DeleteModal';
-import SearchItem from '@/components/SearchItem';
-import DataTable from '@/components/DataTable/DataTable';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectCurrentItem } from '@/redux/crud/selectors';
 import { crud } from '@/redux/crud/actions';

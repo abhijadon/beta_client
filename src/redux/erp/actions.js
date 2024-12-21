@@ -33,43 +33,46 @@ export const erp = {
         payload: { ...data },
       });
     },
- list:
-  ({ entity, options = { page: 1, items: 10 } }) =>
-  async (dispatch) => {
-    dispatch({
-      type: actionTypes.REQUEST_LOADING,
-      keyState: 'list',
-      payload: null,
-    });
-
-    // Remove the items and pageSize properties from options
-    const {  ...restOptions } = options;
-
-    let data = await request.list({ entity, options: restOptions });
-
-    if (data.success === true) {
-      const result = {
-        items: data.result,
-            pagination: {
+  list:
+    ({ entity, options = { page: 1, items: 10 } }) =>
+    async (dispatch) => {
+      dispatch({
+        type: actionTypes.REQUEST_LOADING,
+        keyState: 'list',
+        payload: null,
+      });
+      const { ...restOptions } = options;
+      let data = await request.list({ entity, options: restOptions });
+      if (data.success) {
+        const result = {
+          items: data.result,
+          pagination: {
             current: parseInt(data.pagination.page, 10),
             pageSize: options?.items || 10,
             total: parseInt(data.pagination.count, 10),
             followUpCount: parseInt(data.pagination.followUpCount),
           },
-           };
-      dispatch({
-        type: actionTypes.REQUEST_SUCCESS,
-        keyState: 'list',
-        payload: result,
-      });
-    } else {
-      dispatch({
-        type: actionTypes.REQUEST_FAILED,
-        keyState: 'list',
-        payload: null,
-      });
-    }
-  },
+          summaryResult: {
+            count: parseInt(data.summaryResult?.count || 0, 10),
+            total_course_fee: parseInt(data.summaryResult?.total_course_fee || 0, 10),
+            total_paid_amount: parseInt(data.summaryResult?.total_paid_amount || 0, 10),
+            paid_amount: parseInt(data.summaryResult?.paid_amount || 0, 10),
+            due_amount: parseInt(data.summaryResult?.due_amount || 0, 10),
+          },
+        };
+        dispatch({
+          type: actionTypes.REQUEST_SUCCESS,
+          keyState: 'list',
+          payload: result,
+        });
+      } else {
+        dispatch({
+          type: actionTypes.REQUEST_FAILED,
+          keyState: 'list',
+          payload: null,
+        });
+      }
+    },
   create:
     ({ entity, jsonData }) =>
     async (dispatch) => {
@@ -80,7 +83,7 @@ export const erp = {
       });
 
       let data = await request.create({ entity, jsonData });
-
+      console.log('dt', data);
       if (data.success === true) {
         dispatch({
           type: actionTypes.REQUEST_SUCCESS,

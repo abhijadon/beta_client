@@ -8,7 +8,6 @@ export const initialState = {
   isAdvancedBoxOpen: false,
   isEditBoxOpen: false,
   isAddBoxOpen: false,
-  isPaymentBoxOpen: false,
 };
 
 export function contextReducer(state, action) {
@@ -61,7 +60,6 @@ export function contextReducer(state, action) {
         isEditBoxOpen: false,
         isAddBoxOpen: false,
         isReadBoxOpen: true,
-        isPaymentBoxOpen: false,
       };
     case actionTypes.CLOSE_READ_BOX:
       return {
@@ -75,7 +73,6 @@ export function contextReducer(state, action) {
         isEditBoxOpen: false,
         isAddBoxOpen: false,
         isAdvancedBoxOpen: true,
-        isPaymentBoxOpen: false,
       };
     case actionTypes.CLOSE_ADVANCED_BOX:
       return {
@@ -89,7 +86,6 @@ export function contextReducer(state, action) {
         isAdvancedBoxOpen: false,
         isEditBoxOpen: true,
         isAddBoxOpen: false,
-        isPaymentBoxOpen: false,
       };
     case actionTypes.OPEN_ADD_BOX:
       return {
@@ -98,21 +94,6 @@ export function contextReducer(state, action) {
         isAdvancedBoxOpen: false,
         isEditBoxOpen: false,
         isAddBoxOpen: true,
-        isPaymentBoxOpen: false,
-      };
-    case actionTypes.OPEN_PAYMENT_BOX:
-      return {
-        ...state,
-        isReadBoxOpen: false,
-        isAdvancedBoxOpen: false,
-        isEditBoxOpen: false,
-        isAddBoxOpen: false,
-        isPaymentBoxOpen: true,
-      };
-    case actionTypes.CLOSE_PAYMENT_BOX:
-      return {
-        ...state,
-        isPaymentBoxOpen: false,
       };
     case actionTypes.CLOSE_EDIT_BOX:
       return {
@@ -129,15 +110,8 @@ export function contextReducer(state, action) {
         ...state,
         isReadBoxOpen: !state.isReadBoxOpen,
       };
-    case actionTypes.COLLAPSE_PAYMENT_BOX:
-      return {
-        ...state,
-        isPaymentBoxOpen: !state.isPaymentBoxOpen,
-      };
-
     default: {
       throw new Error(`Unhandled action type: ${action.type}`);
     }
   }
 }
-

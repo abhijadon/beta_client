@@ -123,7 +123,7 @@ export default function DashboardModule() {
                         </div>
                         <div className="mt-2">
                             <Progress
-                                percent={Math.min(Math.round((card.value / 50000000) * 100), 100)}
+                                percent={Math.min(Math.round((card.value / 500000000) * 100), 100)}
                                 status="active"
                                 strokeColor={{
                                     '0%': 'red',

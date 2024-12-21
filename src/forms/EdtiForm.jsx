@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { selectCurrentAdmin } from '@/redux/auth/selectors';
 import axios from 'axios';
+import { request } from '@/request';
 
 const { TextArea } = Input;
 
@@ -19,7 +20,7 @@ export default function EditForm() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:5001/api/form/list');
+                const response = await await request.list({ entity: "formbuilder" });
                 const formFields = response.data.data[0];
                 setFormData(formFields);
             } catch (error) {

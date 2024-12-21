@@ -14,16 +14,12 @@ export default function LoginForm() {
           {
             required: true,
           },
-          {
-            type: 'email',
-          },
         ]}
       >
         <Input
           prefix={<UserOutlined className="site-form-item-icon" />}
-          placeholder="Enter Your Email"
-          type="email"
-          autoComplete="email"
+          placeholder="Enter Your username"
+          autoComplete="username"
           size="large"
         />
       </Form.Item>

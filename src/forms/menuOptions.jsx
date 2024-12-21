@@ -46,6 +46,7 @@ const PermissionForm = ({ onClose, onFormSubmit }) => {
                 <Select mode="multiple" placeholder="Select options">
                     <Option value="Dashboard">Dashboard</Option>
                     <Option value="Application">Application</Option>
+                    <Option value="Formbuilder">FormBuilder</Option>
                     <Option value="Alumni">Alumni</Option>
                     <Option value="Payment">Payment</Option>
                     <Option value="Teams">Teams</Option>

@@ -40,7 +40,7 @@ export default function SidePanel({ config, topContent, bottomContent }) {
     <>
       {ADD_NEW_ENTITY === 'Add Applications' ? ( // Check if ADD_NEW_ENTITY is 'Add Applications'
         <Modal
-          title={ADD_NEW_ENTITY} 
+          title={ADD_NEW_ENTITY}
           open={!isPanelClose} // Change open to visible
           onCancel={collapsePanel}
           footer={null}
@@ -56,26 +56,27 @@ export default function SidePanel({ config, topContent, bottomContent }) {
           </div>
         </Modal>
       ) : (
-          <Drawer
-            title={
-              <div className='float-end font-thin text-[17px]'>
-                {ADD_NEW_ENTITY}
-              </div>
-            } // Use ADD_NEW_ENTITY directly as the title
-            visible={!isPanelClose} // Change open to visible
-            onClose={collapsePanel}
-            footer={null}
-            width={500}
-          >
-            <div>
-              <CollapseBox
-                isCollapsed={isBoxCollapsed}
-                onCollapse={collapsePanelBox}
-                topContent={topContent}
-                bottomContent={bottomContent}
-              />
+        <Drawer
+          title={
+            <div className='float-end text-[15px] font-semibold'>
+              {ADD_NEW_ENTITY}
             </div>
-          </Drawer>
+          }
+          visible={!isPanelClose} // Change open to visible
+          placement='left'
+          onClose={collapsePanel}
+          footer={null}
+          width={400}
+        >
+          <div>
+            <CollapseBox
+              isCollapsed={isBoxCollapsed}
+              onCollapse={collapsePanelBox}
+              topContent={topContent}
+              bottomContent={bottomContent}
+            />
+          </div>
+        </Drawer>
       )}
     </>
   );

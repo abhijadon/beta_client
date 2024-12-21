@@ -1,193 +1,273 @@
-import { Form, Input, Select, Radio, InputNumber } from 'antd';
+import { Form, Input, Select } from 'antd';
 import useLanguage from '@/locale/useLanguage';
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { selectCurrentAdmin } from '@/redux/auth/selectors';
-import axios from 'axios';
-
+import { request } from '@/request';
 const { TextArea } = Input;
 
 export default function EditForm() {
   const translate = useLanguage();
   const [form] = Form.useForm();
   const [formData, setFormData] = useState(null);
-  const [selectedInstitute, setSelectedInstitute] = useState(null);
-  const [selectedUniversity, setSelectedUniversity] = useState(null);
-  const currentAdmin = useSelector(selectCurrentAdmin);
-  const isAdmin = ['admin', 'subadmin', 'manager'].includes(currentAdmin?.role);
+  const [selectedWorkspace, setSelectedWorkspace] = useState(null);
+  const [selectedCollege, setSelectedCollege] = useState(null);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [selectedAdmissionType, setSelectedAdmissionType] = useState(null);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
+  const [selectedPaymentStatus, setSelectedPaymentStatus] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:5001/api/form/list');
-        const formFields = response.data.data[0];
-        setFormData(formFields);
+        const response = await request.list({ entity: 'formbuilder' });
+        if (response.success && response.result.length > 0) {
+          const applicationForm = response.result.find(
+            (form) => form.title === 'Application Form'
+          );
+          if (applicationForm) {
+            setFormData(applicationForm);
+          } else {
+            console.error("No form found with the title 'Application Form'");
+          }
+        } else {
+          console.error('Failed to fetch form data:', response.message);
+        }
       } catch (error) {
-        console.error('Failed to fetch data:', error);
+        console.error('Error fetching data:', error);
       }
     };
 
     fetchData();
   }, []);
 
-
-  const renderFields = (fields) => {
-    return fields.map((field) => {
-      switch (field.Type) {
-        case 'email':
-          return (
-            <Form.Item
-              key={field._id}
-              label={translate(field.label_name)}
-              name={field.field_name}
-              rules={[
-                { required: field.required, message: `${field.label_name} is required` }
-              ]}
-            >
-              <Input type='email' placeholder={field.placeholder} />
-            </Form.Item>
-          );
-        case 'text':
-          return (
-            <Form.Item
-              key={field._id}
-              label={translate(field.label_name)}
-              name={field.field_name}
-              rules={[
-                { required: field.required, message: `${field.label_name} is required` }
-              ]}
-            >
-              <Input type='text' placeholder={field.placeholder} />
-            </Form.Item>
-          );
-        case 'tel':
-          return (
-            <Form.Item
-              key={field._id}
-              label={translate(field.label_name)}
-              name={field.field_name}
-              rules={[
-                { required: field.required, message: `${field.label_name} is required` }
-              ]}
-            >
-              <Input type='tel' placeholder={field.placeholder} />
-            </Form.Item>
-          );
-        default:
-          return null;
-      }
-    });
+  // Function to render dynamic fields
+  const renderDynamicFields = (fields) => {
+    if (!fields || fields.length === 0) return null;
+    return fields.map((field) => (
+      <Form.Item
+        key={field.field_name}
+        label={translate(field.label_name)}
+        name={field.field_name}
+        rules={[
+          { required: field.required, message: `${translate(field.label_name)} is required` },
+        ]}
+      >
+        {field.type === 'select' ? (
+          <Select
+            placeholder={field.placeholder || 'Select'}
+            options={field.options?.map((option) => ({
+              value: option.value,
+              label: translate(option.label),
+            }))}
+          />
+        ) : field.type === 'textarea' ? (
+          <TextArea placeholder={field.placeholder || ''} />
+        ) : (
+          <Input type={field.type || 'text'} placeholder={field.placeholder || ''} />
+        )}
+      </Form.Item>
+    ));
   };
 
   return (
     <>
-      {formData && (
-        <Form form={form} initialValues={formData}>
-          <div className='grid grid-cols-4 gap-3'>
-            <Form.Item
-              label={translate('Institute')}
-              name='institute'
-              rules={[{ required: true, message: 'Please select an institute' }]}
-            >
-              <Select
-                showSearch
-                placeholder='Select an institute'
-                options={formData.institutes.map(institute => ({
-                  value: institute.name?._id,
-                  label: institute.name?.name
-                }))}
-                onChange={(value) => {
-                  setSelectedInstitute(value);
-                  setSelectedUniversity(null); // Reset university selection
-                  form.setFieldsValue({ university: null }); // Reset university field value
-                }}
-              />
-            </Form.Item>
+      <div className='grid grid-cols-4 space-x-2'>
+        {formData && (
+          <Form.Item
+            label={translate(formData.workspaces[0]?.label_name)}
+            name={translate(formData.workspaces[0]?.field_name)}
+            rules={[{ required: true, message: 'Please select a workspace' }]}
+          >
+            <Select
+              placeholder="Select a workspace"
+              options={formData.workspaces.map((workspace) => ({
+                value: workspace._id,
+                label: workspace.name,
+              }))}
+              onChange={(value) => {
+                setSelectedWorkspace(value);
+                setSelectedCollege(null);
+                setSelectedCourse(null);
+                setSelectedAdmissionType(null);
+                form.resetFields(['college', 'course', 'subcourse', 'admissionType', 'payment']);
+              }}
+            />
+          </Form.Item>
+        )}
 
-            {selectedInstitute && (
-              <Form.Item
-                label={translate('University')}
-                name='university'
-                rules={[{ required: true, message: 'Please select a university' }]}
-              >
-                <Select
-                  showSearch
-                  placeholder='Select a university'
-                  options={formData.institutes
-                    .find(institute => institute.name?._id === selectedInstitute)
-                    .universities.map(university => ({
-                      value: university.name?._id,
-                      label: university.name?.name
-                    }))}
-                  onChange={(value) => {
-                    setSelectedUniversity(value);
-                  }}
-                />
-              </Form.Item>
-            )}
+        {selectedWorkspace && (
+          <Form.Item
+            label={translate(formData.college[0]?.label_name)}
+            name={translate(formData.college[0]?.label_name)}
+            rules={[{ required: true, message: 'Please select a college' }]}
+          >
+            <Select
+              placeholder="Select a college"
+              options={
+                formData.workspaces
+                  .find((workspace) => workspace._id === selectedWorkspace)
+                  ?.colleges.map((college) => ({
+                    value: college._id,
+                    label: college.name,
+                  })) || []
+              }
+              onChange={(value) => {
+                setSelectedCollege(value);
+                setSelectedCourse(null);
+                setSelectedAdmissionType(null);
+                form.resetFields(['course', 'subcourse', 'admissionType', 'payment']);
+              }}
+            />
+          </Form.Item>
+        )}
 
-            {selectedUniversity && renderFields(
-              formData.institutes
-                .find(institute => institute.name._id === selectedInstitute)
-                .universities.find(university => university.name._id === selectedUniversity)
-                .fields
-            )}
+        {selectedCollege && (
+          <Form.Item
+            label={translate('Course')}
+            name="course"
+            rules={[{ required: true, message: 'Please select a course' }]}
+          >
+            <Select
+              placeholder="Select a course"
+              options={
+                formData.workspaces
+                  .find((workspace) => workspace._id === selectedWorkspace)
+                  ?.colleges.find((college) => college._id === selectedCollege)
+                  ?.courses.map((course) => ({
+                    value: course.value,
+                    label: course.label,
+                  })) || []
+              }
+              onChange={(value) => {
+                setSelectedCourse(value);
+                form.resetFields(['subcourse']);
+              }}
+            />
+          </Form.Item>
+        )}
 
-            <Form.Item
-              label={translate('status')}
-              name={['customfields', 'status']}
-              rules={[{ required: true, message: 'Status is required' }]}
-            >
-              <Select
-                showSearch
-                options={[
-                  { value: 'New', label: translate('New') },
-                  { value: 'Approved', label: translate('Approved') },
-                  { value: 'Processed', label: translate('Processed') },
-                  { value: 'Enrolled', label: translate('Enrolled') },
-                  { value: 'Correction', label: translate('Correction') },
-                  { value: 'Cancel', label: translate('Cancel') },
-                  { value: 'Refunded', label: translate('Refunded') },
-                  { value: 'Alumni', label: translate('Alumni') },
-                  { value: 'Connected', label: translate('Connected') },
-                ]}
-                onChange={(value) => setStatus(value)}
-              />
-            </Form.Item>
+        {selectedCourse && (
+          <Form.Item
+            label={translate('Subcourse')}
+            name="subcourse"
+            rules={[{ required: true, message: 'Please select a subcourse' }]}
+          >
+            <Select
+              placeholder="Select a subcourse"
+              options={
+                formData.workspaces
+                  .find((workspace) => workspace._id === selectedWorkspace)
+                  ?.colleges.find((college) => college._id === selectedCollege)
+                  ?.courses.find((course) => course.value === selectedCourse)
+                  ?.specializations.map((subcourse) => ({
+                    value: subcourse.value,
+                    label: subcourse.label,
+                  })) || []
+              }
+            />
+          </Form.Item>
+        )}
 
-            {status === 'Enrolled' && (
-              <Form.Item
-                label={translate('Enrollment Number')}
-                name={['customfields', 'enrollment']}
-                rules={[
-                  { required: status === 'Enrolled', message: 'Enrollment number is required for enrolled status' },
-                ]}
-              >
-                <Input placeholder='Enter enrollment number' />
-              </Form.Item>
-            )}
+        {selectedCollege && (
+          <Form.Item
+            label={translate('Admission Type')}
+            name="admissionType"
+            rules={[{ required: true, message: 'Please select an admission type' }]}
+          >
+            <Select
+              placeholder="Select an admission type"
+              options={
+                formData.workspaces
+                  .find((workspace) => workspace._id === selectedWorkspace)
+                  ?.colleges.find((college) => college._id === selectedCollege)
+                  ?.admission_type.map((admission) => ({
+                    value: admission.value,
+                    label: admission.label,
+                  })) || []
+              }
+              onChange={(value) => {
+                setSelectedAdmissionType(value);
+                setSelectedPaymentMethod(null);
+                form.resetFields(['payment', 'paymentStatus']);
+              }}
+            />
+          </Form.Item>
+        )}
 
-            <Form.Item
-              label={translate('Remark')}
-              name={['customfields', 'remark']}
-            >
-              <TextArea rows={1} />
-            </Form.Item>
+        {selectedAdmissionType && (
+          <Form.Item
+            label={translate('Payment Method')}
+            name="payment"
+            rules={[{ required: true, message: 'Please select a payment method' }]}
+          >
+            <Select
+              placeholder="Select a payment method"
+              options={
+                formData.workspaces
+                  .find((workspace) => workspace._id === selectedWorkspace)
+                  ?.colleges.find((college) => college._id === selectedCollege)
+                  ?.admission_type.find((admission) => admission.value === selectedAdmissionType)
+                  ?.payments.map((payment) => ({
+                    value: payment.value,
+                    label: payment.label,
+                  })) || []
+              }
+              onChange={(value) => {
+                setSelectedPaymentMethod(value);
+                form.resetFields(['paymentStatus']);
+              }}
+            />
+          </Form.Item>
+        )}
 
-            {isAdmin && (
-              <Form.Item
-                label={translate('LMS Status')}
-                name={['customfields', 'lmsStatus']}
-              >
-                <Radio.Group>
-                  <Radio value="yes">{translate('Yes')}</Radio>
-                  <Radio value="no">{translate('No')}</Radio>
-                </Radio.Group>
-              </Form.Item>
-            )}
-          </div>
-        </Form>
-      )}
+        {selectedPaymentMethod && (
+          <Form.Item
+            label={translate('Payment Status')}
+            name="paymentStatus"
+            rules={[{ required: true, message: 'Please select a payment status' }]}
+          >
+            <Select
+              placeholder="Select a payment status"
+              options={
+                formData.workspaces
+                  .find((workspace) => workspace._id === selectedWorkspace)
+                  ?.colleges.find((college) => college._id === selectedCollege)
+                  ?.admission_type.find(
+                    (admission) => admission.value === selectedAdmissionType
+                  )
+                  ?.payments.find((payment) => payment.value === selectedPaymentMethod)
+                  ?.paymentType.map((paymentType) => ({
+                    value: paymentType.key,
+                    label: paymentType.label,
+                  })) || []
+              }
+              onChange={(value) => {
+                setSelectedPaymentStatus(value);
+              }}
+            />
+          </Form.Item>
+        )}
+
+        {selectedPaymentStatus &&
+          renderDynamicFields(
+            formData.workspaces
+              .find((workspace) => workspace._id === selectedWorkspace)
+              ?.colleges.find((college) => college._id === selectedCollege)
+              ?.admission_type.find(
+                (admission) => admission.value === selectedAdmissionType
+              )
+              ?.payments.find((payment) => payment.value === selectedPaymentMethod)
+              ?.paymentType.find((type) => type.key === selectedPaymentStatus)
+              ?.paymentStatusOptions[0]?.fields || []
+          )}
+
+        {selectedCollege &&
+          renderDynamicFields(
+            formData.workspaces
+              .find((workspace) => workspace._id === selectedWorkspace)
+              ?.colleges.find((college) => college._id === selectedCollege)
+              ?.fields || []
+          )}
+      </div>
     </>
   );
 }

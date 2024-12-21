@@ -18,11 +18,9 @@ import QuoteUpdate from '@/pages/Quote/QuoteUpdate';
 import Payment from '@/pages/Payment/index';
 import PaymentRead from '@/pages/Payment/PaymentRead';
 import PaymentUpdate from '@/pages/Payment/PaymentUpdate';
-import Employee from '@/pages/Employee';
 import Admin from '@/pages/Admin';
 import Settings from '@/pages/Settings/Settings';
 import PaymentMode from '@/pages/PaymentMode';
-import Teams from '@/pages/Roles';
 import Users from '@/pages/Users';
 import Permission from '@/pages/permission';
 import History from '@/pages/History';
@@ -37,6 +35,8 @@ import OfferCreate from '@/pages/Offer/OfferCreate';
 import OfferRead from '@/pages/Offer/OfferRead';
 import CourseInfo from '@/pages/CourseInfo';
 import Alumni from '@/pages/Alumni';
+import FormBuilder from '@/pages/FormBuilder';
+import Role from '@/pages/Role';
 export default function AppRouter() {
   let element = useRoutes([
     {
@@ -58,6 +58,10 @@ export default function AppRouter() {
     {
       path: '/courseInfo',
       element: <CourseInfo />,
+    },
+    {
+      path: '/roles',
+      element: <Role />,
     },
     {
       path: '/inventory',
@@ -132,10 +136,6 @@ export default function AppRouter() {
       element: <PaymentMode />,
     },
     {
-      path: '/roles',
-      element: <Teams />,
-    },
-    {
       path: '/email',
       element: <Email />,
     },
@@ -170,6 +170,10 @@ export default function AppRouter() {
     {
       path: '/application',
       element: <Application />,
+    },
+    {
+      path: '/formbuilder',
+      element: <FormBuilder />,
     },
     {
       path: '/offer',

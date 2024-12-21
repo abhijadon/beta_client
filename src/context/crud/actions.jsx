@@ -69,19 +69,6 @@ const contextActions = (dispatch) => {
         dispatch({ type: actionTypes.COLLAPSE_READ_BOX });
       },
     },
-    paymentForm: {
-      open: () => {
-        dispatch({ type: actionTypes.OPEN_PAYMENT_BOX });
-        console.log('paymentForm open');
-      },
-      close: () => {
-        dispatch({ type: actionTypes.CLOSE_PAYMENT_BOX });
-        console.log('paymentForm close');
-      },
-      collapse: () => {
-        dispatch({ type: actionTypes.COLLAPSE_PAYMENT_BOX });
-      },
-    },
   };
 };
 

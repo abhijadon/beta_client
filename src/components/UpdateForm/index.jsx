@@ -13,8 +13,8 @@ export default function UpdateForm({ config, formElements, withUpload = false })
   const translate = useLanguage();
   const dispatch = useDispatch();
   const { current, isLoading, isSuccess } = useSelector(selectUpdatedItem);
-  const { state } = useCrudContext();
-  const [isFormVisible, setIsFormVisible] = useState(true);
+  const { state, crudContextAction } = useCrudContext();
+  const { editBox } = crudContextAction
   const [form] = Form.useForm();
 
   const onSubmit = (fieldsValue) => {
@@ -31,38 +31,10 @@ export default function UpdateForm({ config, formElements, withUpload = false })
 
   useEffect(() => {
     if (current) {
-      let newValues = { ...current };
-      if (newValues.birthday) {
-        newValues = {
-          ...newValues,
-          birthday: dayjs(newValues['birthday']),
-        };
-      }
-      if (newValues.date) {
-        newValues = {
-          ...newValues,
-          date: dayjs(newValues['date']),
-        };
-      }
-      if (newValues.expiredDate) {
-        newValues = {
-          ...newValues,
-          expiredDate: dayjs(newValues['expiredDate']),
-        };
-      }
-      if (newValues.created) {
-        newValues = {
-          ...newValues,
-          created: dayjs(newValues['created']),
-        };
-      }
-      if (newValues.updated) {
-        newValues = {
-          ...newValues,
-          updated: dayjs(newValues['updated']),
-        };
-      }
-
+      let newValues = { ...current, 
+        
+       };
+      console.log(newValues)
       form.setFieldsValue(newValues);
     }
   }, [current, form]);
@@ -70,12 +42,11 @@ export default function UpdateForm({ config, formElements, withUpload = false })
   useEffect(() => {
     if (isSuccess) {
       form.resetFields();
+      editBox.close();
       dispatch(crud.resetAction({ actionType: 'update' }));
       dispatch(crud.list({ entity }));
-      setIsFormVisible(false);
     }
-  }, [isSuccess, entity, dispatch, form]);
-
+  }, [isSuccess]);
 
   const { isEditBoxOpen } = state;
 

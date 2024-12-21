@@ -5,16 +5,15 @@ import CrudModule from '@/modules/CrudModule/CrudModule';
 import LeadForm from '@/forms/LeadForm';
 import useLanguage from '@/locale/useLanguage';
 import '@/style/tailwind.css'
-import EditForm from '../../forms/EdtiForm';
 import AddForm from '@/forms/AddPayment';
 import { useState } from 'react';
 export default function Lead() {
   const translate = useLanguage();
   const [page, setPage] = useState(1);
-  const entity = 'lead';
+  const entity = 'applications';
   const searchConfig = {
-    displayLabels: ['full_name'],
-    searchFields: ['contact.email', 'contact.phone', 'full_name', 'lead_id', 'customfields.enrollment'],
+    displayLabels: 'full_name',
+    searchFields: ['email', 'phone', 'full_name', 'lead_id', 'enrollment'],
     outputValue: '_id',
   };
 
@@ -28,59 +27,54 @@ export default function Lead() {
 
   const dataTableColumns = [
     {
-      title: 'S.No.',
-      dataIndex: '',
-      render: (value, item, index) => (page - 1) * 1000 + index + 1, // S.No. based on page and index
-    },
-    {
       title: translate('StudentID'),
-      dataIndex: ['lead_id'],
+      dataIndex: 'lead_id',
     },
     {
       title: translate('Student Name'),
-      dataIndex: ['full_name'],
+      dataIndex: 'full_name',
       render: (text) => toTitleCase(text),
     },
     {
       title: 'Email',
-      dataIndex: ['contact', 'email'],
+      dataIndex: 'email',
       key: 'email',
       render: (email) => toTitleCase(email),
     },
     {
       title: 'Phone',
-      dataIndex: ['contact', 'phone'],
+      dataIndex: 'phone',
       key: 'phone',
     },
     {
       title: translate('Course'),
-      dataIndex: ['education', 'course'],
+      dataIndex: 'course',
       key: 'course'
     },
     {
       title: translate('Specialization'),
-      dataIndex: ['customfields', 'enter_specialization'],
+      dataIndex: 'enter_specialization',
       key: 'enter_specialization'
     },
     {
       title: translate('Session'),
-      dataIndex: ['customfields', 'session'],
+      dataIndex: 'session',
       key: 'session'
     },
     {
       title: translate('Admission type'),
-      dataIndex: ['customfields', 'admission_type'],
+      dataIndex: 'admission_type',
       key: 'admission_type'
     },
     {
       title: translate('Institute Name'),
-      dataIndex: ['customfields', 'institute_name'],
+      dataIndex: 'institute_name',
       key: 'institute_name'
     },
 
     {
       title: 'University Name', // Assuming 'university_name' is within customfields
-      dataIndex: ['customfields', 'university_name'],
+      dataIndex: 'university_name',
       key: 'university_name',
     },
     {
@@ -91,45 +85,45 @@ export default function Lead() {
     },
     {
       title: translate('Father Name'),
-      dataIndex: ['customfields', 'father_name'],
+      dataIndex: 'father_name',
       key: 'father_name',
       render: (father_name) => toTitleCase(father_name),
     },
     {
       title: translate('Mother Name'),
-      dataIndex: ['customfields', 'mother_name'],
+      dataIndex: 'mother_name',
       key: 'mother_name',
       render: (mother_name) => toTitleCase(mother_name),
     },
     {
       title: translate('Date of birth'),
-      dataIndex: ['customfields', 'dob'],
+      dataIndex: 'dob',
       key: 'dob',
       render: (dob) => dayjs(dob).format('DD-MM-YYYY'), // Format dob using dayjs
     },
     {
       title: translate('gender'),
-      dataIndex: ['customfields', 'gender'],
+      dataIndex: 'gender',
       key: 'gender'
     },
     {
       title: translate('Total Course Fee'),
-      dataIndex: ['customfields', 'total_course_fee'],
+      dataIndex: 'total_course_fee',
       key: 'total_course_fee'
     },
     {
       title: translate('Total Paid amount'),
-      dataIndex: ['customfields', 'total_paid_amount'],
+      dataIndex: 'total_paid_amount',
       key: 'total_paid_amount'
     },
     {
       title: translate('Due amount'),
-      dataIndex: ['customfields', 'due_amount'],
+      dataIndex: 'due_amount',
       key: 'due_amount'
     },
     {
       title: translate('paymentStatus'),
-      dataIndex: ['customfields', 'paymentStatus'],
+      dataIndex: 'paymentStatus',
       render: (paymentStatus) => {
         let color =
           paymentStatus === 'payment approved'
@@ -144,7 +138,7 @@ export default function Lead() {
     },
     {
       title: translate('Status'),
-      dataIndex: ['customfields', 'status'],
+      dataIndex: 'status',
       render: (status) => {
         let color =
           status === 'New'
@@ -161,7 +155,7 @@ export default function Lead() {
     },
     {
       title: 'Remark',
-      dataIndex: ['customfields', 'remark'],
+      dataIndex: 'remark',
       key: 'remark',
       render: text => <Tooltip title={text}>
         <div className="truncate-text">{text}</div>
@@ -198,7 +192,7 @@ export default function Lead() {
       <CrudModule
         createForm={<LeadForm />}
         addForm={<AddForm isUpdateForm={true} />}
-        updateForm={<EditForm isUpdateForm={true} />}
+        updateForm={<LeadForm isUpdateForm={true} />}
         config={config}
       />
     </>
