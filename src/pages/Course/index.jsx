@@ -1,129 +1,97 @@
-import React, { useState } from 'react';
-import { Table, Button, Drawer, message, Card } from 'antd';
-import useFetch from '@/hooks/useFetch';
-import { request } from '@/request';
-import UpdateCourse from '@/forms/updateCourse';
-import CourseForm from '@/forms/courseForm';
-import { RiDeleteBin6Line } from "react-icons/ri";
-import { TbEdit } from "react-icons/tb";
-import { CiBookmarkPlus } from "react-icons/ci";
-import University from "../University"
-const Index = () => {
-    const [visible, setVisible] = useState(false);
-    const [selectedRecord, setSelectedRecord] = useState(null);
+import { Tag, Tooltip } from 'antd';
+import CrudModule from '@/modules/CrudModule/CrudModule';
+import useLanguage from '@/locale/useLanguage';
+import moment from 'moment';
+import UniversityForm from '@/forms/University_Form';
 
-    const { data: courseList, isLoading: instituteLoading, error } = useFetch(() =>
-        request.list({ entity: 'course' })
-    );
+export default function University() {
+    const translate = useLanguage();
+    const entity = 'course';
 
-    const handleAddNew = () => {
-        setSelectedRecord(null);
-        setVisible(true);
-    };
-
-    const handleDrawerClose = () => {
-        setVisible(false);
-        setSelectedRecord(null);
-    };
-
-    const handleEdit = (record) => {
-        setSelectedRecord(record);
-        setVisible(true);
-    };
-
-    const handleDelete = async (record) => {
-        try {
-            await request.delete({ entity: 'course', id: record._id });
-            message.success('Record deleted successfully');
-        } catch (error) {
-            message.error('Failed to delete record');
-        }
-    };
-
-    const handleFormSubmit = () => {
-        setVisible(false);
-        setSelectedRecord(null);
-    };
-
-    const columns = [
+    const dataTableColumns = [
         {
-            title: 'Course code',
-            dataIndex: 'courseCode',
-            key: 'courseCode',
+            title: 'Enabled',
+            dataIndex: 'enabled',
+            key: 'enabled',
+            width: 50, // Set width in pixels
+            render: (enabled) => (enabled ? <Tag color="green">Yes</Tag> : <Tag color="red">No</Tag>),
         },
         {
-            title: 'Name',
+            title: 'Removed',
+            dataIndex: 'removed',
+            key: 'removed',
+            width: 50, // Set width in pixels
+            render: (removed) => (removed ? <Tag color="red">Yes</Tag> : <Tag color="green">No</Tag>),
+        },
+        {
+            title: 'Course Name',
             dataIndex: 'name',
             key: 'name',
+            width: 150, // Set width in pixels
         },
         {
-            title: 'Course Duration',
-            dataIndex: 'courseDuration',
-            key: 'courseDuration',
+            title: 'Description',
+            dataIndex: 'description',
+            key: 'description',
+            width: 200, // Set width in pixels
         },
         {
-            title: 'Course Type',
-            dataIndex: 'courseType',
-            key: 'courseType',
-        },
-        {
-            title: 'Actions',
-            dataIndex: '',
-            key: 'actions',
-            fixed: 'right',
-            render: (text, record) => (
-                <span className='flex items-center gap-4'>
-                    <TbEdit
-                        className='text-blue-500 text-base cursor-pointer'
-                        onClick={() => handleEdit(record)}
-                    />
-                    <RiDeleteBin6Line
-                        className='text-red-500 text-base cursor-pointer'
-                        onClick={() => handleDelete(record)}
-                    />
-                </span>
+            title: 'University',
+            dataIndex: 'university',
+            key: 'university',
+            width: 200, // Set width in pixels
+            render: (university) => (
+                <>
+                    {university?.map((uni) => (
+                        <Tooltip key={uni._id} title={uni.description}>
+                            <Tag color="blue">{uni.name}</Tag>
+                        </Tooltip>
+                    ))}
+                </>
             ),
+        },
+        {
+            title: 'Created At',
+            dataIndex: 'createdAt',
+            key: 'createdAt',
+            width: 150, // Set width in pixels
+            render: (date) => moment(date).format('DD/MM/YYYY'),
+        },
+        {
+            title: 'Updated At',
+            dataIndex: 'updatedAt',
+            key: 'updatedAt',
+            width: 150, // Set width in pixels
+            render: (date) => moment(date).format('DD/MM/YYYY'),
         },
     ];
 
-    if (error) {
-        return <div>Error: {error.message}</div>;
-    }
+    const Labels = {
+        PANEL_TITLE: translate('course'),
+        DATATABLE_TITLE: translate('course'),
+        ADD_NEW_ENTITY: translate('add_course'),
+        ENTITY_NAME: translate('course'),
+        CREATE_ENTITY: translate('save'),
+        UPDATE_ENTITY: translate('update'),
+    };
+
+    const configPage = {
+        entity,
+        ...Labels,
+    };
+
+    const config = {
+        ...configPage,
+        dataTableColumns,
+    };
 
     return (
         <>
-            <Card className='mb-3'>
-                <div className='flex justify-between items-center'>
-                    <div>
-                        <p className='text-lg font-thin mb-5'>Institute</p>
-                    </div>
-                    <Button type="primary" onClick={handleAddNew} className='relative float-right mb-4 flex items-center gap-1 mr-5'>
-                        <span><CiBookmarkPlus className='font-bold text-lg' /></span> <span>Add</span>
-                    </Button>
-                </div>
-                <Table dataSource={courseList?.result} columns={columns} loading={instituteLoading} rowKey="_id" pagination={true} />
-                <Drawer
-                    title={selectedRecord ? 'update course' : 'Add Course'}
-                    placement="right"
-                    closable={false}
-                    onClose={handleDrawerClose}
-                    visible={visible}
-                    width={400}
-                >
-                    {selectedRecord ? (
-                        <UpdateCourse
-                            onClose={handleDrawerClose}
-                            onFormSubmit={handleFormSubmit}
-                            selectedRecord={selectedRecord} />
-                    ) : (
-                        <CourseForm
-                            onClose={handleDrawerClose}
-                            onFormSubmit={handleFormSubmit} />
-                    )}
-                </Drawer>
-            </Card>
+            <CrudModule
+                createForm={<UniversityForm />}
+                updateForm={<UniversityForm isUpdateForm={true} />}
+                config={config}
+            />
         </>
     );
-};
-
-export default Index;
+}

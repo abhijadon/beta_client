@@ -33,28 +33,29 @@ export const navigation = {
         payload: { ...data },
       });
     },
-  list:
+  menu:
     ({ entity }) =>
     async (dispatch) => {
       dispatch({
         type: actionTypes.REQUEST_LOADING,
-        keyState: 'list',
+        keyState: 'menu',
         payload: null,
       });
-      let data = await request.list({ entity });
+
+      let data = await request.menu({ entity });
       if (data.success) {
         const result = {
           items: data.result,
         };
         dispatch({
           type: actionTypes.REQUEST_SUCCESS,
-          keyState: 'list',
+          keyState: 'menu',
           payload: result,
         });
       } else {
         dispatch({
           type: actionTypes.REQUEST_FAILED,
-          keyState: 'list',
+          keyState: 'menu',
           payload: null,
         });
       }

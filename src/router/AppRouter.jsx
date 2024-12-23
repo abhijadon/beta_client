@@ -4,9 +4,7 @@ import Logout from '@/pages/Logout';
 import NotFound from '@/pages/NotFound.jsx';
 import Dashboard from '@/pages/Dashboard';
 import Customer from '@/pages/Customer';
-import Inventory from '@/pages/Inventory';
-import Order from '@/pages/Order';
-import Invoice from '@/pages/Invoice';
+import University from '@/pages/University';
 import InvoiceCreate from '@/pages/Invoice/InvoiceCreate';
 import InvoiceRead from '@/pages/Invoice/InvoiceRead';
 import InvoiceUpdate from '@/pages/Invoice/InvoiceUpdate';
@@ -34,9 +32,12 @@ import Offer from '@/pages/Offer/index';
 import OfferCreate from '@/pages/Offer/OfferCreate';
 import OfferRead from '@/pages/Offer/OfferRead';
 import CourseInfo from '@/pages/CourseInfo';
+import Course from '@/pages/Course';
 import Alumni from '@/pages/Alumni';
 import FormBuilder from '@/pages/FormBuilder';
 import Role from '@/pages/Role';
+import Sidebar from '@/pages/Sidebar';
+import Institute from '@/pages/Institute';
 export default function AppRouter() {
   let element = useRoutes([
     {
@@ -60,20 +61,24 @@ export default function AppRouter() {
       element: <CourseInfo />,
     },
     {
+      path: '/course',
+      element: <Course />,
+    },
+    {
       path: '/roles',
       element: <Role />,
     },
     {
-      path: '/inventory',
-      element: <Inventory />,
+      path: '/institute',
+      element: <Institute />,
     },
     {
-      path: '/order',
-      element: <Order />,
+      path: '/sidebar',
+      element: <Sidebar />,
     },
     {
-      path: '/invoice',
-      element: <Invoice />,
+      path: '/university',
+      element: <University />,
     },
     {
       path: '/invoice/create',

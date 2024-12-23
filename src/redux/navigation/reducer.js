@@ -4,7 +4,7 @@ const INITIAL_STATE = {
   current: {
     result: null,
   },
-  list: {
+  menu: {
     result: {
       items: [],
     },

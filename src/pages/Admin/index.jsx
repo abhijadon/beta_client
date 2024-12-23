@@ -1,8 +1,6 @@
 import { Badge } from 'antd';
 import useLanguage from '@/locale/useLanguage';
 import AdminCrudModule from '@/modules/AdminCrudModule';
-import RolesForm from '@/forms/AddRoleform';
-
 export default function Admin() {
   const translate = useLanguage();
   const entity = 'teams';
@@ -80,8 +78,8 @@ export default function Admin() {
 
   return (
     <AdminCrudModule
-      createForm={<RolesForm />}
-      updateForm={<RolesForm isUpdateForm={true} />}
+      // createForm={<RolesForm />}
+      // updateForm={<RolesForm isUpdateForm={true} />}
       config={config}
     />
   );

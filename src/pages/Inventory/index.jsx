@@ -1,6 +1,5 @@
 import React from 'react';
 import CrudModule from '@/modules/CrudModule/CrudModule';
-import InventoryForm from '@/forms/AddRoleform'; // Retaining InventoryForm
 import useLanguage from '@/locale/useLanguage';
 
 export default function Inventory() {
@@ -65,8 +64,8 @@ export default function Inventory() {
   };
   return (
     <CrudModule
-      createForm={<InventoryForm />} // Retaining InventoryForm
-      updateForm={<InventoryForm isUpdateForm={true} />} // Retaining InventoryForm
+      // createForm={<InventoryForm />} // Retaining InventoryForm
+      // updateForm={<InventoryForm isUpdateForm={true} />} // Retaining InventoryForm
       config={config}
     />
   );

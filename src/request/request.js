@@ -173,7 +173,18 @@ const request = {
       return errorHandler(error);
     }
   },
-
+  menu: async ({ entity }) => {
+    try {
+      const response = await axios.get(`${entity}/menu`);
+      successHandler(response, {
+        notifyOnSuccess: false,
+        notifyOnFailed: false,
+      });
+      return response.data;
+    } catch (error) {
+      return errorHandler(error);
+    }
+  },
   post: async ({ entity, jsonData }) => {
     try {
       const response = await axios.post(entity, jsonData);

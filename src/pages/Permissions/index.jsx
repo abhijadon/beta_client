@@ -1,7 +1,6 @@
 import { Badge } from 'antd';
 import useLanguage from '@/locale/useLanguage';
 import AdminCrudModule from '@/modules/AdminCrudModule';
-import AdminForm from '@/forms/AdminForm';
 
 export default function Admin() {
     const translate = useLanguage();
@@ -116,8 +115,7 @@ export default function Admin() {
 
     return (
         <>
-            <AdminCrudModule createForm={<AdminForm />}
-                updateForm={<AdminForm isUpdateForm={true} />}
+            <AdminCrudModule
                 config={config}
             />
         </>

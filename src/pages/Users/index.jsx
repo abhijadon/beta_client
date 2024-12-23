@@ -1,85 +1,32 @@
-import React, { useState } from 'react';
-import { Table, Button, Drawer, message, Card, Input } from 'antd';
-import useFetch from '@/hooks/useFetch';
-import { request } from '@/request';
-import AdminForm from '@/forms/Userform';
-import { RiDeleteBin6Line } from "react-icons/ri";
-import { TbEdit } from "react-icons/tb";
-import { FaRegUser } from "react-icons/fa";
-import { TbPasswordMobilePhone } from "react-icons/tb";
-import UpdatePasswordForm from '@/forms/Updatepassword';
+import { Tag, Tooltip } from 'antd';
+import CrudModule from '@/modules/CrudModule/CrudModule';
+import useLanguage from '@/locale/useLanguage';
+import moment from 'moment';
+import UserForm from '@/forms/User_Form';
+export default function Lead() {
+    const translate = useLanguage();
+    const entity = 'user';
 
-const Index = () => {
-    const [visible, setVisible] = useState(false);
-    const [selectedRecord, setSelectedRecord] = useState(null);
-    const [reload, setReload] = useState(true);
-    const [updatePassword, setUpdatePassword] = useState(false);
-    const [searchQuery, setSearchQuery] = useState('');
-
-    const { data: adminList, isLoading: adminLoading, error } = useFetch(() =>
-        request.list({ entity: 'admin' }), [reload]
-    );
-
-    const handleAddNew = () => {
-        setSelectedRecord(null);
-        setVisible(true);
+    // Define color mapping for actions
+    const actionColors = {
+        read: 'blue',
+        write: 'green',
+        create: 'orange',
+        update: 'purple',
+        delete: 'red',
     };
 
-    const handleDrawerClose = () => {
-        setVisible(false);
-        setSelectedRecord(null);
-        setUpdatePassword(false);
-    };
-
-    const handleEdit = (record) => {
-        setSelectedRecord(record);
-        setVisible(true);
-    };
-
-    const handleDelete = async (record) => {
-        try {
-            await request.delete({ entity: 'admin', id: record._id });
-            message.success('Record deleted successfully');
-            setReload(prev => !prev);
-        } catch (error) {
-            message.error('Failed to delete record');
-        }
-    };
-
-    const handleUpdatePassword = (record) => {
-        setSelectedRecord(record);
-        setUpdatePassword(true);
-        setVisible(true);
-    };
-
-    const handleFormSubmit = () => {
-        setVisible(false);
-        setSelectedRecord(null);
-        setReload(prev => !prev);
-    };
-
-    const filteredAdminList = adminList?.result.filter((admin) => {
-        const query = searchQuery.toLowerCase();
-        const fullname = typeof admin.fullname === 'string' ? admin.fullname.toLowerCase() : '';
-        const username = typeof admin.username === 'string' ? admin.username.toLowerCase() : '';
-        const phone = typeof admin.phone === 'string' ? admin.phone.toLowerCase() : '';
-        return (
-            fullname.includes(query) ||
-            username.includes(query) ||
-            phone.includes(query)
-        );
-    });
-
-    const columns = [
+    const dataTableColumns = [
         {
-            title: 'Name',
-            dataIndex: 'fullname',
-            key: 'fullname',
+            title: 'Enabled',
+            dataIndex: 'enabled',
+            key: 'enabled',
+            render: (enabled) => (enabled ? <Tag color="green">Yes</Tag> : <Tag color="red">No</Tag>),
         },
         {
-            title: 'Email',
-            dataIndex: 'username',
-            key: 'username',
+            title: 'Full Name',
+            dataIndex: 'fullname',
+            key: 'fullname',
         },
         {
             title: 'Phone',
@@ -87,96 +34,86 @@ const Index = () => {
             key: 'phone',
         },
         {
+            title: 'Username',
+            dataIndex: 'username',
+            key: 'username',
+        },
+        {
             title: 'Role',
             dataIndex: 'role',
             key: 'role',
-        },
-        {
-            title: 'Status',
-            dataIndex: 'status',
-            key: 'status',
+            render: (role) => (
+                role ? <Tag color="blue">{role.name}</Tag> : <Tag color="gray">No Role</Tag>
+            ),
         },
         {
             title: 'Actions',
-            dataIndex: '',
+            dataIndex: ['role', 'actions'],
             key: 'actions',
-            fixed: 'right',
-            render: (text, record) => (
-                <span className='flex items-center gap-2'>
-                    <TbPasswordMobilePhone
-                        title='Update password'
-                        className='text-green-500 text-base cursor-pointer'
-                        onClick={() => handleUpdatePassword(record)}
-                    />
-                    <TbEdit
-                        title='Edit'
-                        className='text-blue-500 text-base cursor-pointer'
-                        onClick={() => handleEdit(record)}
-                    />
-                    <RiDeleteBin6Line
-                        title='Delete'
-                        className='text-red-500 text-base cursor-pointer'
-                        onClick={() => handleDelete(record)}
-                    />
-                </span>
-            ),
+            render: (actions) =>
+                actions?.map((action) => (
+                    <Tooltip key={action} title={`Action: ${action}`}>
+                        <Tag color={actionColors[action]}>{action}</Tag>
+                    </Tooltip>
+                )),
+        },
+        {
+            title: 'Workspaces',
+            dataIndex: 'workspace',
+            key: 'workspace',
+            render: (workspaces) =>
+                workspaces?.map((workspace) => (
+                    <Tooltip key={workspace._id} title={`Workspace: ${workspace.description}`}>
+                        <Tag color="geekblue">{workspace.name}</Tag>
+                    </Tooltip>
+                )),
+        },
+        {
+            title: 'Is Admin',
+            dataIndex: 'isAdmin',
+            key: 'isAdmin',
+            render: (isAdmin) => (isAdmin ? <Tag color="gold">Yes</Tag> : <Tag color="red">No</Tag>),
+        },
+        {
+            title: 'Created At',
+            dataIndex: 'createdAt',
+            key: 'createdAt',
+            render: (date) => moment(date).format('DD/MM/YYYY HH:mm'),
+        },
+        {
+            title: 'Updated At',
+            dataIndex: 'updatedAt',
+            key: 'updatedAt',
+            render: (date) => moment(date).format('DD/MM/YYYY HH:mm'),
         },
     ];
 
-    if (error) {
-        return <div>Error: {error.message}</div>;
-    }
+    const Labels = {
+        PANEL_TITLE: translate('Users'),
+        DATATABLE_TITLE: translate('User List'),
+        ADD_NEW_ENTITY: translate('Add User'),
+        ENTITY_NAME: translate('User'),
+        CREATE_ENTITY: translate('Save'),
+        UPDATE_ENTITY: translate('Update'),
+    };
+
+    const configPage = {
+        entity,
+        ...Labels,
+    };
+
+    const config = {
+        ...configPage,
+        dataTableColumns,
+    };
 
     return (
-        <Card>
-            <div className='flex justify-between items-center'>
-                <div>
-                    <p className='text-lg font-thin mb-5'>All Users</p>
-                </div>
-                <Button type="primary" onClick={handleAddNew} className='relative float-right mb-4 flex items-center gap-1'>
-                    <span><FaRegUser /></span> <span>Add User</span>
-                </Button>
-            </div>
-            <div className='flex gap-2 mb-4 justify-start items-center'>
-                <Input allowClear className='w-52'
-                    placeholder='Search by Name, Email'
-                    value={searchQuery}
-                    onChange={e => setSearchQuery(e.target.value)}
-                />
-            </div>
-            <Table
-                dataSource={filteredAdminList}
-                columns={columns}
-                loading={adminLoading}
-                rowKey="_id"
-                pagination={false}
-                onChange={() => setReload(prev => !prev)}
+        <>
+            <CrudModule
+                createForm={<UserForm />}
+                updateForm={<UserForm isUpdateForm={true} />}
+                config={config}
             />
-            <Drawer
-                title={updatePassword ? 'Update Password' : (selectedRecord ? 'Edit User' : 'Add User')}
-                placement="right"
-                closable={false}
-                onClose={handleDrawerClose}
-                visible={visible}
-                width={400}
-            >
-                {updatePassword ? (
-                    <UpdatePasswordForm
-                        record={selectedRecord}
-                        onClose={handleDrawerClose}
-                        onFormSubmit={handleFormSubmit}
-                    />
-                ) : (
-                    <AdminForm
-                        isUpdateForm={!!selectedRecord}
-                        initialValues={selectedRecord || {}}
-                        onClose={handleDrawerClose}
-                        onFormSubmit={handleFormSubmit}
-                    />
-                )}
-            </Drawer>
-        </Card>
+        </>
     );
-};
-
-export default Index;
+}

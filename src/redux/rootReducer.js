@@ -7,6 +7,7 @@ import { reducer as settingsReducer } from './settings';
 import { reducer as translateReducer } from './translate';
 import { reducer as courseReducer } from './course';
 import { reducer as navigationReducer } from './navigation';
+import { reducer as optionsReducer } from './options';
 import * as actionTypes from './auth/types';
 
 // Combine all reducers.
@@ -19,7 +20,7 @@ const appReducer = combineReducers({
   translate: translateReducer,
   course: courseReducer,
   navigation: navigationReducer,
-  // Add more reducers as needed.
+  options: optionsReducer,
 });
 
 const rootReducer = (state, action) => {

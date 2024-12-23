@@ -7,7 +7,10 @@ export const selectCurrentItem = createSelector(
   (navigation) => navigation.current
 );
 
-export const selectListItems = createSelector([selectNavigation], (navigation) => navigation.list);
+export const selectMenuItems = createSelector(
+  [(state) => state.navigation],
+  (navigation) => navigation.menu
+);
 export const selectItemById = (itemId) =>
   createSelector(selectListItems, (list) => list.result.items.find((item) => item._id === itemId));
 

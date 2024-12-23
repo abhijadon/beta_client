@@ -13,7 +13,16 @@ export default function RolesForm({ isUpdateForm = false }) {
         { label: translate('Create'), value: 'create' },
         { label: translate('Update'), value: 'update' },
         { label: translate('Delete'), value: 'delete' },
+        { label: translate('History'), value: 'history' },
+        { label: translate('Excel'), value: 'excel' },
+        { label: translate('Payment'), value: 'payment' },
+        { label: translate('Document'), value: 'document' },
+        { label: translate('Notification'), value: 'notification' },
+        { label: translate('Comment'), value: 'comment' },
+        { label: translate('Team'), value: 'team' },
+        { label: translate('Filter'), value: 'filter' },
     ];
+
 
     return (
         <>

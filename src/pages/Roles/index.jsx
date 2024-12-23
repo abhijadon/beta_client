@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { Table, Button, Drawer, message, Card } from 'antd';
 import useFetch from '@/hooks/useFetch'; // Assuming this hook handles API requests
 import { request } from '@/request';
-import AddRoleform from '@/forms/AddRoleform';
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { TbEdit } from "react-icons/tb";
 import { CiBookmarkPlus } from "react-icons/ci";
@@ -112,7 +111,7 @@ const UserTable = () => {
                     <span><CiBookmarkPlus className='text-red-600 font-bold text-lg' /></span> <span>Add Teams</span>
                 </Button>
             </div>
-            
+
             <Table dataSource={userList?.result} columns={columns} loading={userLoading} />
             <Drawer
                 title={selectedRecord ? 'Edit Item' : 'Add New Item'}
@@ -122,18 +121,7 @@ const UserTable = () => {
                 visible={visible}
                 width={400}
             >
-                {selectedRecord ? (
-                    <EditRole
-                        onClose={handleDrawerClose}
-                        onFormSubmit={handleFormSubmit}
-                        selectedRecord={selectedRecord}
-                    />
-                ) : (
-                    <AddRoleform
-                        onClose={handleDrawerClose}
-                        onFormSubmit={handleFormSubmit}
-                    />
-                )}
+
             </Drawer>
         </Card>
     );

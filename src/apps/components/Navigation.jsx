@@ -8,40 +8,35 @@ import {
   MenuOutlined,
   LogoutOutlined,
   FormOutlined,
-  SettingOutlined,
+  BookFilled,
 } from '@ant-design/icons';
-import { PiMicrosoftTeamsLogoLight, PiStudentFill } from 'react-icons/pi';
-import logoIcon from '@/style/images/sodelogo.png';
-import logoText from '@/style/images/sodeicon.png';
-import { FaUsersRays } from 'react-icons/fa6';
+import { PiStudentFill } from 'react-icons/pi';
+import { FaUniversalAccess, FaUsersRays } from 'react-icons/fa6';
 import { CiUnread } from 'react-icons/ci';
 import { GrCircleInformation } from 'react-icons/gr';
 import { IoSettingsOutline } from 'react-icons/io5';
-import { logout } from '@/redux/auth/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { navigation } from '@/redux/navigation/actions';
-import { selectListItems } from '@/redux/navigation/selectors';
+import { selectMenuItems } from '@/redux/navigation/selectors';
 import { useMediaQuery } from 'react-responsive';
-
+import logoText from '@/style/images/sodeicon.png';
 const { Header } = Layout;
 
 export default function Navigation() {
   const dispatch = useDispatch();
-  const { result: listResult, isLoading, isSuccess } = useSelector(selectListItems);
+  const { result: listResult, isLoading, isSuccess } = useSelector(selectMenuItems);
   const [menuOptions, setMenuOptions] = useState([]);
   const [drawerVisible, setDrawerVisible] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-
-  // Media query to detect mobile screens
   const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
 
-  // Fetch the navigation data on component mount
+  // Fetch navigation data from the API
   useEffect(() => {
-    dispatch(navigation.list({ entity: 'navigation' }));
+    dispatch(navigation.menu({ entity: 'navigation' }));
   }, [dispatch]);
 
-  // Update menuOptions state when data loads
+  // Update menuOptions when data is successfully fetched
   useEffect(() => {
     if (isSuccess && listResult?.items) {
       setMenuOptions(listResult.items);
@@ -50,68 +45,38 @@ export default function Navigation() {
 
   // Handle logout
   const handleLogout = () => {
-    dispatch(logout());
+    // Implement your logout logic
+    console.log('Logged out');
     navigate('/login');
   };
 
-  // Generate menu items
-  const generateMenuItems = () =>
-    menuOptions.map((option) => {
-      let icon;
-      let path;
+  // Icon map to dynamically associate icons with menu items
+  const iconMap = {
+    Dashboard: <DashboardOutlined />,
+    Application: <UserAddOutlined />,
+    Alumni: <PiStudentFill />,
+    Payment: <CreditCardOutlined />,
+    Sidebar: <MenuOutlined />,
+    Users: <FaUsersRays />,
+    Roles: <CiUnread />,
+    'Courses & Fees': <GrCircleInformation />,
+    Course: <BookFilled />,
+    Settings: <IoSettingsOutline />,
+    Institute: <FaUniversalAccess />,
+    University: <FaUniversalAccess />,
+    Formbuilder: <FormOutlined />,
+  };
 
-      switch (option.name) {
-        case 'Dashboard':
-          icon = <DashboardOutlined />;
-          path = '/';
-          break;
-        case 'Application':
-          icon = <UserAddOutlined />;
-          path = '/application';
-          break;
-        case 'Alumni':
-          icon = <PiStudentFill />;
-          path = '/alumni';
-          break;
-        case 'Payment':
-          icon = <CreditCardOutlined />;
-          path = '/payment';
-          break;
-        case 'Teams':
-          icon = <PiMicrosoftTeamsLogoLight />;
-          path = '/teams';
-          break;
-        case 'Users':
-          icon = <FaUsersRays />;
-          path = '/users';
-          break;
-        case 'Roles':
-          icon = <CiUnread />;
-          path = '/roles';
-          break;
-        case 'Courses & Fees':
-          icon = <GrCircleInformation />;
-          path = '/courseInfo';
-          break;
-        case 'Settings':
-          icon = <IoSettingsOutline />;
-          path = '/settings';
-          break;
-        case 'Formbuilder':
-          icon = <FormOutlined />;
-          path = '/formbuilder';
-          break;
-        default:
-          icon = null;
-          path = `/${option.name.toLowerCase()}`;
-      }
-
-      return {
-        key: path,
-        icon,
-        label: <Link to={path}>{option.name}</Link>,
-      };
-    });
+  // Recursive function to generate menu items
+  const generateMenuItems = (items) =>
+    items
+      .sort((a, b) => a.order - b.order) // Sort by 'order' field
+      .map((item) => ({
+        key: item.path || `/${item.name.toLowerCase()}`,
+        icon: iconMap[item.name] || null,
+        label: <Link to={item.path || `/${item.name.toLowerCase()}`}>{item.name}</Link>,
+        children: item.children ? generateMenuItems(item.children) : null, // Recursively handle children
+      }));
 
   // Show/hide mobile drawer
   const toggleDrawer = () => {
@@ -121,35 +86,24 @@ export default function Navigation() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center">
-        <Spin tip="Loading navigation..." size="large" className="flex items-center justify-center" />
+        <Spin tip="Loading navigation..." size="large" />
       </div>
     );
   }
-
 
   if (!isSuccess || !menuOptions.length) {
     return <div>No navigation data available</div>;
   }
 
-
   return (
-    <Header className="fixed top-0 left-0 w-full z-50 bg-white shadow-xl flex items-center justify-between px-4"
-    >
+    <Header className="fixed top-0 left-0 w-full z-50 bg-white shadow-xl flex items-center justify-between px-4">
       {/* Logo Section */}
       <div
         className="logo"
         onClick={() => navigate('/')}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          cursor: 'pointer',
-        }}
+        style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}
       >
-        <img
-          src={logoText}
-          alt="Logo Text"
-          style={{ height: '40px' }}
-        />
+        <img src={logoText} alt="Logo" style={{ height: '40px' }} />
       </div>
 
       <div
@@ -163,18 +117,15 @@ export default function Navigation() {
         {!isMobile && (
           <Menu
             mode="horizontal"
-            items={generateMenuItems()}
+            items={generateMenuItems(menuOptions)}
             selectedKeys={[location.pathname]}
             style={{ flex: 1, justifyContent: 'flex-start' }}
           />
         )}
-        <Button className={`ml-5 ${isMobile ? 'hover:text-black hover:bg-transparent' : 'hover:text-black hover:bg-transparent hover:border-black border-blue-500'}`}
+        <Button
           type="link"
           icon={isMobile ? <MenuOutlined /> : <LogoutOutlined />}
           onClick={isMobile ? toggleDrawer : handleLogout}
-          style={{
-            marginLeft: 20,
-          }}
         >
           {isMobile ? null : 'Logout'}
         </Button>
@@ -188,19 +139,20 @@ export default function Navigation() {
           onClose={toggleDrawer}
           open={drawerVisible}
           width={250}
-          bodyStyle={{ padding: 0, display: 'flex', flexDirection: 'column', height: '100%' }}
+          bodyStyle={{ padding: 0 }}
         >
           <Menu
             mode="vertical"
-            items={generateMenuItems()}
+            items={generateMenuItems(menuOptions)}
             selectedKeys={[location.pathname]}
             onClick={toggleDrawer}
           />
           <div style={{ marginTop: 'auto', padding: '10px' }}>
-            <Button className='w-full text-red-500 border-dashed border-red-500 bg-transparent '
+            <Button
               type="link"
               icon={<LogoutOutlined />}
               onClick={handleLogout}
+              className="w-full text-red-500 border-dashed"
             >
               Logout
             </Button>

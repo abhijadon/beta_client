@@ -5,7 +5,6 @@ import { Button, Col, Form, Row } from 'antd';
 import { PageHeader } from '@ant-design/pro-layout';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import AdminForm from '@/forms/AdminForm';
 
 import { updateProfile } from '@/redux/auth/actions';
 
@@ -87,7 +86,7 @@ const UpdateAdmin = ({ config }) => {
             labelCol={{ span: 4 }}
             wrapperCol={{ span: 12 }}
           >
-            <AdminForm />
+            {/* <AdminForm /> */}
             <Roleform isUpdateForm={true} />
           </Form>
         </Col>
