@@ -69,6 +69,19 @@ const contextActions = (dispatch) => {
         dispatch({ type: actionTypes.COLLAPSE_READ_BOX });
       },
     },
+    brochure: {
+      open: () => {
+        dispatch({ type: actionTypes.OPEN_BROCHURE_BOX });
+        console.log('BROCHURE open');
+      },
+      close: () => {
+        dispatch({ type: actionTypes.CLOSE_BROCHURE_BOX });
+        console.log('BROCHURE close');
+      },
+      collapse: () => {
+        dispatch({ type: actionTypes.COLLAPSE_BROCHURE_BOX });
+      },
+    },
   };
 };
 

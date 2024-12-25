@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import dayjs from 'dayjs';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { crud } from '@/redux/crud/actions';
 import { useCrudContext } from '@/context/crud';
@@ -9,35 +8,53 @@ import { Button, Form } from 'antd';
 import Loading from '@/components/Loading';
 
 export default function UpdateForm({ config, formElements, withUpload = false }) {
-  let { entity } = config;
+  const { entity } = config;
   const translate = useLanguage();
   const dispatch = useDispatch();
   const { current, isLoading, isSuccess } = useSelector(selectUpdatedItem);
   const { state, crudContextAction } = useCrudContext();
-  const { editBox } = crudContextAction
+  const { editBox } = crudContextAction;
   const [form] = Form.useForm();
-
-  const onSubmit = (fieldsValue) => {
-    const id = current._id;
-    if (fieldsValue.file && withUpload) {
-      fieldsValue.file = fieldsValue.file[0].originFileObj;
-    }
-    const trimmedValues = Object.keys(fieldsValue).reduce((acc, key) => {
-      acc[key] = typeof fieldsValue[key] === 'string' ? fieldsValue[key].trim() : fieldsValue[key];
-      return acc;
-    }, {});
-    dispatch(crud.update({ entity, id, jsonData: trimmedValues, withUpload }));
-  };
 
   useEffect(() => {
     if (current) {
-      let newValues = { ...current, 
-        
-       };
+      const newValues = {
+        ...current,
+        ...(entity === 'university' && {
+          institute: Array.isArray(current.institute) && current.institute.length > 0
+            ? current.institute[0]?.name
+            : "", // Default to an empty string if `institute` is undefined or empty
+        }),
+        ...(entity === 'user' && {
+          role: current?.role?.name || '',
+          workspace: Array.isArray(current.workspace) && current.workspace.length > 0
+            ? current.workspace[0]?.name
+            : "",
+
+        }),
+      };
       console.log(newValues)
+
       form.setFieldsValue(newValues);
     }
-  }, [current, form]);
+  }, [current, form, entity]);
+
+  const onSubmit = (fieldsValue) => {
+    const id = current?._id;
+
+    if (fieldsValue.institute && Array.isArray(current?.institute)) {
+      // Match the `name` from `fieldsValue` to the `name` in `current.institute`
+      const matchedInstitute = current.institute.find(inst => inst.name === fieldsValue.institute);
+      fieldsValue.institute = matchedInstitute ? matchedInstitute._id : null; // Use `_id` if a match is found, otherwise set to null
+    } else {
+      fieldsValue.institute = null; // Default to null if institute is not provided or invalid
+    }
+
+    console.log('Final submitted values:', fieldsValue);
+
+    // Dispatch the update action
+    dispatch(crud.update({ entity, id, jsonData: fieldsValue, withUpload }));
+  };
 
   useEffect(() => {
     if (isSuccess) {
@@ -46,11 +63,12 @@ export default function UpdateForm({ config, formElements, withUpload = false })
       dispatch(crud.resetAction({ actionType: 'update' }));
       dispatch(crud.list({ entity }));
     }
-  }, [isSuccess]);
+  }, [isSuccess, dispatch, editBox, entity, form]);
 
   const { isEditBoxOpen } = state;
 
   const show = isEditBoxOpen ? { display: 'block', opacity: 1 } : { display: 'none', opacity: 0 };
+
   return (
     <div style={show}>
       <Loading isLoading={isLoading}>
@@ -71,8 +89,7 @@ export default function UpdateForm({ config, formElements, withUpload = false })
               display: 'inline-block',
               paddingLeft: '5px',
             }}
-          >
-          </Form.Item>
+          />
         </Form>
       </Loading>
     </div>

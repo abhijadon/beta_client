@@ -1,6 +1,6 @@
-import { Badge } from 'antd';
 import useLanguage from '@/locale/useLanguage';
-import CourseModule from '@/modules/CourseModules'
+import CourseinfoForm from '@/forms/CourseInfo_Form';
+import CourseModule from '@/modules/CourseModules';
 export default function Admin() {
     const translate = useLanguage();
     const entity = 'info';
@@ -90,9 +90,10 @@ export default function Admin() {
 
     const Labels = {
         PANEL_TITLE: translate('course'),
-        DATATABLE_TITLE: translate('course_list'),
+        DATATABLE_TITLE: 'Courses & Fees',
         ADD_NEW_ENTITY: translate('add course'),
         ENTITY_NAME: translate('course'),
+        OPEN_BROCHURE: translate('open_brochure'),
         CREATE_ENTITY: translate('save'),
         UPDATE_ENTITY: translate('update'),
     };
@@ -109,6 +110,8 @@ export default function Admin() {
     return (
         <CourseModule
             config={config}
+            createForm={<CourseinfoForm />} // Form component for creating courses
+            updateForm={<CourseinfoForm isUpdateForm={true} />} // Form component for updating courses
         />
     );
 }

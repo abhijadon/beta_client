@@ -1,15 +1,4 @@
-import {
-  RESET_STATE,
-  CURRENT_ACTION,
-  CURRENT_ITEM,
-  REQUEST_FAILED,
-  REQUEST_LOADING,
-  REQUEST_SUCCESS,
-  RESET_ACTION,
-  SET_FILTER,
-  RESET_FILTER,
-  SET_SEARCH,
-} from './types';
+import * as actionTypes from './types';
 
 const INITIAL_KEY_STATE = {
   result: null,
@@ -17,7 +6,6 @@ const INITIAL_KEY_STATE = {
   isLoading: false,
   isSuccess: false,
 };
-
 
 const INITIAL_STATE = {
   current: {
@@ -40,24 +28,47 @@ const INITIAL_STATE = {
     filterField: [], // Changed to an array
     filterValue: [], // Changed to an array
   },
-  search: '', // Add search initial state
-  delete: INITIAL_KEY_STATE
+  search: '',
+  create: {
+    result: null,
+    current: null,
+    isLoading: false,
+    isSuccess: false,
+  },
+  update: {
+    result: null,
+    current: null,
+    isLoading: false,
+    isSuccess: false,
+  },
+  delete: {
+    result: null,
+    current: null,
+    isLoading: false,
+    isSuccess: false,
+  },
+  read: {
+    result: null,
+    current: null,
+    isLoading: false,
+    isSuccess: false,
+  },
+  delete: INITIAL_KEY_STATE,
 };
 
-
-const erpReducer = (state = INITIAL_STATE, action) => {
+const courseReducer = (state = INITIAL_STATE, action) => {
   const { payload, keyState } = action;
   switch (action.type) {
-    case RESET_STATE:
+    case actionTypes.RESET_STATE:
       return INITIAL_STATE;
-    case CURRENT_ITEM:
+    case actionTypes.CURRENT_ITEM:
       return {
         ...state,
         current: {
           result: payload,
         },
       };
-    case REQUEST_LOADING:
+    case actionTypes.REQUEST_LOADING:
       return {
         ...state,
         [keyState]: {
@@ -65,7 +76,7 @@ const erpReducer = (state = INITIAL_STATE, action) => {
           isLoading: true,
         },
       };
-    case REQUEST_FAILED:
+    case actionTypes.REQUEST_FAILED:
       return {
         ...state,
         [keyState]: {
@@ -74,7 +85,7 @@ const erpReducer = (state = INITIAL_STATE, action) => {
           isSuccess: false,
         },
       };
-    case REQUEST_SUCCESS:
+    case actionTypes.REQUEST_SUCCESS:
       return {
         ...state,
         [keyState]: {
@@ -83,43 +94,24 @@ const erpReducer = (state = INITIAL_STATE, action) => {
           isSuccess: true,
         },
       };
-    case CURRENT_ACTION:
+    case actionTypes.CURRENT_ACTION:
       return {
         ...state,
         [keyState]: {
-          ...state[keyState],
+          ...INITIAL_KEY_STATE,
           current: payload,
         },
       };
-    case RESET_ACTION:
+    case actionTypes.RESET_ACTION:
       return {
         ...state,
         [keyState]: {
           ...INITIAL_STATE[keyState],
         },
       };
-    case SET_SEARCH:
-      return {
-        ...state,
-        search: action.payload,
-      };
-    case SET_FILTER:
-      return {
-        ...state,
-        filter: {
-          filterField: [...state.filter.filterField, action.payload.filterField],
-          filterValue: [...state.filter.filterValue, action.payload.filterValue],
-        },
-      };
-    case RESET_FILTER:
-      return {
-        ...state,
-        filter: INITIAL_STATE.filter,
-        search: state.search, // Preserve search state
-      };
     default:
       return state;
   }
 };
 
-export default erpReducer;
+export default courseReducer;

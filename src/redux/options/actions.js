@@ -24,7 +24,6 @@ export const fetchOptions = (entity) => {
     axios
       .get(`/${entity}/options`) // Corrected the syntax here
       .then((response) => {
-        console.log('API response:', response.data);
         if (!response.data.success) {
           throw new Error('Failed to fetch data');
         }

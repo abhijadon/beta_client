@@ -9,6 +9,7 @@ import {
   LogoutOutlined,
   FormOutlined,
   BookFilled,
+  BookOutlined,
 } from '@ant-design/icons';
 import { PiStudentFill } from 'react-icons/pi';
 import { FaUniversalAccess, FaUsersRays } from 'react-icons/fa6';
@@ -20,6 +21,7 @@ import { navigation } from '@/redux/navigation/actions';
 import { selectMenuItems } from '@/redux/navigation/selectors';
 import { useMediaQuery } from 'react-responsive';
 import logoText from '@/style/images/sodeicon.png';
+import { MdOutlineDoneOutline } from 'react-icons/md';
 const { Header } = Layout;
 
 export default function Navigation() {
@@ -58,13 +60,15 @@ export default function Navigation() {
     Payment: <CreditCardOutlined />,
     Sidebar: <MenuOutlined />,
     Users: <FaUsersRays />,
-    Roles: <CiUnread />,
-    'Courses & Fees': <GrCircleInformation />,
+    Role: <CiUnread />,
+    'Course_Fees': <GrCircleInformation />,
     Course: <BookFilled />,
     Settings: <IoSettingsOutline />,
     Institute: <FaUniversalAccess />,
     University: <FaUniversalAccess />,
     Formbuilder: <FormOutlined />,
+    Mode: <MdOutlineDoneOutline />,
+    'Sub-Course': <BookOutlined />
   };
 
   // Recursive function to generate menu items

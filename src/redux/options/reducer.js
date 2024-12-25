@@ -6,6 +6,9 @@ const initialState = {
     navigation: { data: [], loading: false },
     institutes: { data: [], loading: false },
     university: { data: [], loading: false },
+    modes: { data: [], loading: false },
+    course: { data: [], loading: false },
+    subcourse: { data: [], loading: false },
     // other entities...
   },
   loading: {},

@@ -18,7 +18,7 @@ import PaymentRead from '@/pages/Payment/PaymentRead';
 import PaymentUpdate from '@/pages/Payment/PaymentUpdate';
 import Admin from '@/pages/Admin';
 import Settings from '@/pages/Settings/Settings';
-import PaymentMode from '@/pages/PaymentMode';
+import Subcourse from '@/pages/Subcourse';
 import Users from '@/pages/Users';
 import Permission from '@/pages/permission';
 import History from '@/pages/History';
@@ -30,8 +30,8 @@ import Profile from '@/pages/Profile';
 import Application from '@/pages/Application/index';
 import Offer from '@/pages/Offer/index';
 import OfferCreate from '@/pages/Offer/OfferCreate';
-import OfferRead from '@/pages/Offer/OfferRead';
-import CourseInfo from '@/pages/CourseInfo';
+import Mode from '@/pages/Mode';
+import CourseInfo from '@/pages/Course_Info';
 import Course from '@/pages/Course';
 import Alumni from '@/pages/Alumni';
 import FormBuilder from '@/pages/FormBuilder';
@@ -57,7 +57,7 @@ export default function AppRouter() {
       element: <Customer />,
     },
     {
-      path: '/courseInfo',
+      path: '/course_fees',
       element: <CourseInfo />,
     },
     {
@@ -65,7 +65,7 @@ export default function AppRouter() {
       element: <Course />,
     },
     {
-      path: '/roles',
+      path: '/role',
       element: <Role />,
     },
     {
@@ -137,8 +137,8 @@ export default function AppRouter() {
       element: <Settings />,
     },
     {
-      path: '/payment/mode',
-      element: <PaymentMode />,
+      path: '/sub-course',
+      element: <Subcourse />,
     },
     {
       path: '/email',
@@ -189,8 +189,8 @@ export default function AppRouter() {
       element: <OfferCreate />,
     },
     {
-      path: '/offer/read/:id',
-      element: <OfferRead />,
+      path: '/mode',
+      element: <Mode />,
     },
     {
       path: '*',

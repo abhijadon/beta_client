@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Form, Input, Switch, Select } from 'antd';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -20,16 +20,25 @@ export default function NavigationForm({ isUpdateForm = false }) {
     const children = useSelector((state) => selectSpecificEntityData(state, 'navigation'));
     const childrenLoading = useSelector((state) => selectSpecificEntityLoading(state, 'navigation'));
 
-    console.log('Roles from selector:', roles);
-    console.log('Children from selector:', children);
+    // Refs to track if API calls have already been made
+    const isRolesFetched = useRef(false);
+    const isChildrenFetched = useRef(false);
 
     useEffect(() => {
         const rolesController = new AbortController(); // AbortController for roles
         const childrenController = new AbortController(); // AbortController for children
 
-        // Dispatch actions with AbortController signals
-        dispatch(fetchOptions('roles', { signal: rolesController.signal }));
-        dispatch(fetchOptions('navigation', { signal: childrenController.signal }));
+        // Fetch roles if not already fetched
+        if (!isRolesFetched.current) {
+            dispatch(fetchOptions('roles', { signal: rolesController.signal }));
+            isRolesFetched.current = true; // Mark roles as fetched
+        }
+
+        // Fetch children if not already fetched
+        if (!isChildrenFetched.current) {
+            dispatch(fetchOptions('navigation', { signal: childrenController.signal }));
+            isChildrenFetched.current = true; // Mark children as fetched
+        }
 
         // Cleanup function to abort requests when component unmounts
         return () => {
@@ -63,7 +72,6 @@ export default function NavigationForm({ isUpdateForm = false }) {
             <Form.Item
                 label={translate('Children')}
                 name="children"
-                rules={[{ required: true, message: translate('Please select children') }]}
             >
                 <Select
                     mode="multiple"
@@ -97,7 +105,7 @@ export default function NavigationForm({ isUpdateForm = false }) {
             {/* Roles Selection Field */}
             <Form.Item
                 label={translate('Roles')}
-                name="roles"
+                name="role"
                 rules={[{ required: true, message: translate('Please select roles') }]}
             >
                 <Select

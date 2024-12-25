@@ -1,130 +1,108 @@
-import React, { useState } from 'react';
-import { Table, Button, Drawer, message, Card } from 'antd';
-import useFetch from '@/hooks/useFetch';
-import { request } from '@/request';
-import UpdateSubcours from '@/forms/UpdateSubcours';
-import SubcourseForm from '@/forms/Subcourse';
-import { RiDeleteBin6Line } from "react-icons/ri";
-import { TbEdit } from "react-icons/tb";
-import { CiBookmarkPlus } from "react-icons/ci";
+import { Tag, Tooltip } from 'antd';
+import CrudModule from '@/modules/CrudModule/CrudModule';
+import useLanguage from '@/locale/useLanguage';
+import moment from 'moment';
+import SubcourseForm from '@/forms/SubCourse_Form';
 
+export default function Subcourse() {
+    const translate = useLanguage();
+    const entity = 'subcourse';
 
-const Index = () => {
-    const [visible, setVisible] = useState(false);
-    const [selectedRecord, setSelectedRecord] = useState(null);
-
-    const { data: courseList, isLoading: instituteLoading, error } = useFetch(() =>
-        request.list({ entity: 'subcourse' })
-    );
-
-    const handleAddNew = () => {
-        setSelectedRecord(null);
-        setVisible(true);
-    };
-
-    const handleDrawerClose = () => {
-        setVisible(false);
-        setSelectedRecord(null);
-    };
-
-    const handleEdit = (record) => {
-        setSelectedRecord(record);
-        setVisible(true);
-    };
-
-    const handleDelete = async (record) => {
-        try {
-            await request.delete({ entity: 'course', id: record._id });
-            message.success('Record deleted successfully');
-        } catch (error) {
-            message.error('Failed to delete record');
-        }
-    };
-
-    const handleFormSubmit = () => {
-        setVisible(false);
-        setSelectedRecord(null);
-    };
-
-    const columns = [
+    const dataTableColumns = [
         {
-            title: 'Subcourse code',
-            dataIndex: 'subcourseCode',
-            key: 'subcourseCode',
-        },
-        {
-            title: 'Course name',
-            dataIndex: ['coursename', 'name'],
-            key: 'coursename',
-        },
-        {
-            title: 'Subcourse',
-            dataIndex: 'subcourse',
-            key: 'subcourse',
-        },
-        {
-            title: 'Shortname',
-            dataIndex: 'shortname',
-            key: 'shortname',
-        },
-        {
-            title: 'Actions',
-            dataIndex: '',
-            key: 'actions',
-            fixed: 'right',
-            render: (text, record) => (
-                <span className='flex items-center gap-4'>
-                    <TbEdit
-                        className='text-blue-500 text-base cursor-pointer'
-                        onClick={() => handleEdit(record)}
-                    />
-                    <RiDeleteBin6Line
-                        className='text-red-500 text-base cursor-pointer'
-                        onClick={() => handleDelete(record)}
-                    />
-                </span>
+            title: translate('Enabled'),
+            dataIndex: 'enabled',
+            key: 'enabled',
+            width: 80,
+            render: (enabled) => (
+                <Tag color={enabled ? 'green' : 'red'}>
+                    {enabled ? translate('Yes') : translate('No')}
+                </Tag>
             ),
+        },
+        {
+            title: translate('Removed'),
+            dataIndex: 'removed',
+            key: 'removed',
+            width: 80,
+            render: (removed) => (
+                <Tag color={removed ? 'red' : 'green'}>
+                    {removed ? translate('Yes') : translate('No')}
+                </Tag>
+            ),
+        },
+        {
+            title: translate('Subcourse Name'),
+            dataIndex: 'name',
+            key: 'name',
+            width: 200,
+        },
+        {
+            title: translate('Description'),
+            dataIndex: 'description',
+            key: 'description',
+            width: 300,
+        },
+        {
+            title: translate('Course'),
+            dataIndex: 'course',
+            key: 'course',
+            width: 200,
+            render: (courses) => (
+                <>
+                    {Array.isArray(courses) && courses.length > 0 ? (
+                        courses.map((course) => (
+                            <Tooltip key={course._id} title={course.description || translate('No description')}>
+                                <Tag color="blue">{course.name || translate('Unnamed Course')}</Tag>
+                            </Tooltip>
+                        ))
+                    ) : (
+                        <Tag color="red">{translate('No course associated')}</Tag>
+                    )}
+                </>
+            ),
+        },
+        {
+            title: translate('Created At'),
+            dataIndex: 'createdAt',
+            key: 'createdAt',
+            width: 150,
+            render: (date) => moment(date).format('DD/MM/YYYY'),
+        },
+        {
+            title: translate('Updated At'),
+            dataIndex: 'updatedAt',
+            key: 'updatedAt',
+            width: 150,
+            render: (date) => moment(date).format('DD/MM/YYYY'),
         },
     ];
 
-    if (error) {
-        return <div>Error: {error.message}</div>;
-    }
+
+    const Labels = {
+        PANEL_TITLE: translate('Subcourses'),
+        DATATABLE_TITLE: translate('Subcourse List'),
+        ADD_NEW_ENTITY: translate('Add Subcourse'),
+        ENTITY_NAME: translate('Subcourse'),
+        CREATE_ENTITY: translate('Save Subcourse'),
+        UPDATE_ENTITY: translate('Update Subcourse'),
+    };
+
+    const configPage = {
+        entity,
+        ...Labels,
+    };
+
+    const config = {
+        ...configPage,
+        dataTableColumns,
+    };
 
     return (
-        <>
-            <Card className='mb-3'>
-                <div className='flex justify-between items-center'>
-                    <div>
-                        <p className='text-lg font-thin mb-5'>Subcourse</p>
-                    </div>
-                    <Button type="primary" onClick={handleAddNew} className='relative float-right mb-4 flex items-center gap-1 mr-5'>
-                        <span><CiBookmarkPlus className='font-bold text-lg' /></span> <span>Add</span>
-                    </Button>
-                </div>
-                <Table dataSource={courseList?.result} columns={columns} loading={instituteLoading} rowKey="_id" pagination={true} />
-                <Drawer
-                    title={selectedRecord ? 'update course' : 'Add Course'}
-                    placement="right"
-                    closable={false}
-                    onClose={handleDrawerClose}
-                    visible={visible}
-                    width={400}
-                >
-                    {selectedRecord ? (
-                        <UpdateSubcours
-                            onClose={handleDrawerClose}
-                            onFormSubmit={handleFormSubmit}
-                            selectedRecord={selectedRecord} />
-                    ) : (
-                        <SubcourseForm
-                            onClose={handleDrawerClose}
-                            onFormSubmit={handleFormSubmit} />
-                    )}
-                </Drawer>
-            </Card>
-        </>
+        <CrudModule
+            createForm={<SubcourseForm />}
+            updateForm={<SubcourseForm isUpdateForm={true} />}
+            config={config}
+        />
     );
-};
-
-export default Index;
+}

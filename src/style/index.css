@@ -2,8 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
 .logo {
   display: flex;
   align-items: center;
@@ -143,4 +141,8 @@
   white-space: nowrap; /* Prevent wrapping */
   overflow: hidden; /* Hide overflow */
   text-overflow: ellipsis; /* Add ellipsis when the text overflows */
+}
+
+:where(.css-dev-only-do-not-override-142vneq).ant-drawer-left > .ant-drawer-content-wrapper {
+  box-shadow: none !important;
 }

@@ -1,51 +1,53 @@
-import { CrudLayout } from '@/layout'
-import React from 'react'
-import CourseTable from "@/components/CourseDataTable"
-import { useLayoutEffect, useEffect, useState } from 'react';
-import { Row, Col } from 'antd';
-import UpdateForm from '@/components/UpdateForm';
-import { useDispatch, useSelector } from 'react-redux';
-import { selectCurrentItem } from '@/redux/crud/selectors';
-import { crud } from '@/redux/crud/actions';
-import { useCrudContext } from '@/context/crud';
-
+import { useLayoutEffect } from 'react';
+import { Row } from 'antd';
+import CreateForm from '@/components/Course/CreateForm';
+import UpdateForm from '@/components/Course/UpdateInfo';
+import DeleteModal from '@/components/Course/DeleteModal';
+import SearchItem from '@/components/SearchItem';
+import DataTable from '@/components/Course/Data';
+import { useDispatch } from 'react-redux';
+import { CrudLayout } from '@/layout';
+import { course } from '@/redux/course/actions';
+import ReadItem from '@/components/Course/Read';
 
 function SidePanelTopContent({ config, formElements, withUpload }) {
-    const { state } = useCrudContext();
-    const { entityDisplayLabels } = config;
-
-    const { isReadBoxOpen, isEditBoxOpen } = state;
-    const { result: currentItem } = useSelector(selectCurrentItem);
-    const dispatch = useDispatch();
-
-    const [labels, setLabels] = useState('');
-
-    useEffect(() => {
-        if (currentItem && entityDisplayLabels) {
-            const currentLabels = entityDisplayLabels.map((x) => currentItem[x]).join(' ');
-            setLabels(currentLabels);
-        }
-    }, [currentItem, entityDisplayLabels]);
-
     return (
         <>
-            <Row>
-                <Col span={24}>
-                    <div className="line"></div>
-                </Col>
-                <div className="space10"></div>
-            </Row>
+            <ReadItem config={config} />
             <UpdateForm config={config} formElements={formElements} withUpload={withUpload} />
         </>
     );
 }
 
-export default function index({ config }) {
+function FixHeaderPanel({ config }) {
     return (
-        <CrudLayout config={config}
-            sidePanelTopContent={<SidePanelTopContent config={config} />}
-        >
-            <CourseTable config={config} extra={[]} />
-        </CrudLayout>
-    )
+        <Row>
+            <SearchItem config={config} />
+        </Row>
+    );
 }
+
+function CourseModule({ config, createForm, updateForm, withUpload = false, filter }) {
+    const dispatch = useDispatch();
+    useLayoutEffect(() => {
+        dispatch(course.resetState());
+    }, []);
+
+    return (
+        <CrudLayout
+            config={config}
+            fixHeaderPanel={<FixHeaderPanel config={config} />}
+            sidePanelBottomContent={
+                <CreateForm config={config} formElements={createForm} withUpload={withUpload} />
+            }
+            sidePanelTopContent={
+                <SidePanelTopContent config={config} formElements={updateForm} withUpload={withUpload} />
+            }
+        >
+            <DataTable config={config} extra={[]} filter={filter} />
+            <DeleteModal config={config} />
+        </CrudLayout>
+    );
+}
+
+export default CourseModule;

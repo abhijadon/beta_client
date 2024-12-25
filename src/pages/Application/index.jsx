@@ -2,7 +2,7 @@
 import { Tag, Space, Tooltip } from 'antd';
 import dayjs from 'dayjs'; // Import dayjs if not already imported
 import CrudModule from '@/modules/CrudModule/CrudModule';
-import LeadForm from '@/forms/LeadForm';
+import LeadForm from '@/forms/Lead_Form';
 import useLanguage from '@/locale/useLanguage';
 import '@/style/tailwind.css'
 import AddForm from '@/forms/AddPayment';

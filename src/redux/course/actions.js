@@ -1,15 +1,4 @@
-import {
-  RESET_STATE,
-  CURRENT_ACTION,
-  CURRENT_ITEM,
-  REQUEST_FAILED,
-  REQUEST_LOADING,
-  REQUEST_SUCCESS,
-  RESET_ACTION,
-  SET_FILTER,
-  RESET_FILTER,
-  SET_SEARCH,
-} from './types';
+import * as actionTypes from './types';
 import { request } from '@/request';
 
 export const course = {
@@ -17,14 +6,14 @@ export const course = {
     (props = {}) =>
     async (dispatch) => {
       dispatch({
-        type: RESET_STATE,
+        type: actionTypes.RESET_STATE,
       });
     },
   resetAction:
     ({ actionType }) =>
     async (dispatch) => {
       dispatch({
-        type: RESET_ACTION,
+        type: actionTypes.RESET_ACTION,
         keyState: actionType,
         payload: null,
       });
@@ -33,7 +22,7 @@ export const course = {
     ({ data }) =>
     async (dispatch) => {
       dispatch({
-        type: CURRENT_ITEM,
+        type: actionTypes.CURRENT_ITEM,
         payload: { ...data },
       });
     },
@@ -41,94 +30,154 @@ export const course = {
     ({ actionType, data }) =>
     async (dispatch) => {
       dispatch({
-        type: CURRENT_ACTION,
+        type: actionTypes.CURRENT_ACTION,
         keyState: actionType,
         payload: { ...data },
       });
     },
-  setFilter:
-    ({ filterField, filterValue }) => ({
-      type: SET_FILTER,
-      payload: { filterField, filterValue },
-    }),
-  resetFilter:
-    () => ({
-      type: RESET_FILTER,
-    }),
-  setSearch:
-    (query) => ({
-      type: SET_SEARCH,
-      payload: query,
-    }),
-
   list:
     ({ entity, options = { page: 1, items: 10 } }) =>
-    async (dispatch, getState) => {
+    async (dispatch) => {
       dispatch({
-        type: REQUEST_LOADING,
+        type: actionTypes.REQUEST_LOADING,
         keyState: 'list',
         payload: null,
       });
 
-      const { filter, search } = getState().course;
+      const { ...restOptions } = options;
 
-      // Construct the query parameters
-      const filterFields = filter.filterField || [];
-      const filterValues = filter.filterValue || [];
+      let data = await request.list({ entity, options: restOptions });
 
-      // Build query string
-      const queryParams = new URLSearchParams({
-        page: options.page,
-        items: options.items,
-        q: search,
-        ...filterFields.reduce((acc, field, index) => {
-          acc[`filterField[${index}]`] = field;
-          return acc;
-        }, {}),
-        ...filterValues.reduce((acc, value, index) => {
-          acc[`filterValue[${index}]`] = value;
-          return acc;
-        }, {}),
-      }).toString();
-
-      try {
-        let data = await request.list({ entity, options: queryParams });
-
-        if (data.success === true) {
-          const result = {
-            items: data.result,
-            pagination: {
-              current: parseInt(data.pagination.page, 10),
-              pageSize: options?.items || 10,
-              total: parseInt(data.pagination.count, 10),
-            },
-          };
-          dispatch({
-            type: REQUEST_SUCCESS,
-            keyState: 'list',
-            payload: result,
-          });
-        } else {
-          dispatch({
-            type: REQUEST_FAILED,
-            keyState: 'list',
-            payload: null,
-          });
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
+      if (data.success === true) {
+        const result = {
+          items: data.result,
+          pagination: {
+            current: parseInt(data.pagination.page, 10),
+            pageSize: options?.items || 10,
+            total: parseInt(data.pagination.count, 10),
+            countReceived: parseInt(data.pagination.paymentReceivedCount, 10),
+            countRejected: parseInt(data.pagination.paymentRejectedCount, 10),
+            countApproved: parseInt(data.pagination.paymentApprovedCount, 10),
+          },
+        };
         dispatch({
-          type: REQUEST_FAILED,
+          type: actionTypes.REQUEST_SUCCESS,
+          keyState: 'list',
+          payload: result,
+        });
+      } else {
+        dispatch({
+          type: actionTypes.REQUEST_FAILED,
           keyState: 'list',
           payload: null,
         });
       }
     },
-     delete:
+  create:
+    ({ entity, jsonData, withUpload = false }) =>
+    async (dispatch) => {
+      dispatch({
+        type: actionTypes.REQUEST_LOADING,
+        keyState: 'create',
+        payload: null,
+      });
+      let data = null;
+      if (withUpload) {
+        data = await request.createAndUpload({ entity, jsonData });
+      } else {
+        data = await request.create({ entity, jsonData });
+      }
+
+      if (data.success === true) {
+        dispatch({
+          type: actionTypes.REQUEST_SUCCESS,
+          keyState: 'create',
+          payload: data.result,
+        });
+
+        dispatch({
+          type: actionTypes.CURRENT_ITEM,
+          payload: data.result,
+        });
+      } else {
+        dispatch({
+          type: actionTypes.REQUEST_FAILED,
+          keyState: 'create',
+          payload: null,
+        });
+      }
+    },
+  read:
     ({ entity, id }) =>
     async (dispatch) => {
       dispatch({
-        type: REQUEST_LOADING,
+        type: actionTypes.REQUEST_LOADING,
+        keyState: 'read',
+        payload: null,
+      });
+
+      let data = await request.read({ entity, id });
+
+      if (data.success === true) {
+        dispatch({
+          type: actionTypes.CURRENT_ITEM,
+          payload: data.result,
+        });
+        dispatch({
+          type: actionTypes.REQUEST_SUCCESS,
+          keyState: 'read',
+          payload: data.result,
+        });
+      } else {
+        dispatch({
+          type: actionTypes.REQUEST_FAILED,
+          keyState: 'read',
+          payload: null,
+        });
+      }
+    },
+
+  update:
+    ({ entity, id, jsonData, withUpload = false }) =>
+    async (dispatch) => {
+      dispatch({
+        type: actionTypes.REQUEST_LOADING,
+        keyState: 'update',
+        payload: null,
+      });
+
+      let data = null;
+
+      if (withUpload) {
+        data = await request.updateAndUpload({ entity, id, jsonData });
+      } else {
+        data = await request.update({ entity, id, jsonData });
+      }
+
+      if (data.success === true) {
+        dispatch({
+          type: actionTypes.REQUEST_SUCCESS,
+          keyState: 'update',
+          payload: data.result,
+        });
+        dispatch({
+          type: actionTypes.CURRENT_ITEM,
+          payload: data.result,
+        });
+      } else {
+        dispatch({
+          type: actionTypes.REQUEST_FAILED,
+          keyState: 'update',
+          payload: null,
+        });
+      }
+    },
+
+  delete:
+    ({ entity, id }) =>
+    async (dispatch) => {
+      dispatch({
+        type: actionTypes.REQUEST_LOADING,
         keyState: 'delete',
         payload: null,
       });
@@ -137,18 +186,44 @@ export const course = {
 
       if (data.success === true) {
         dispatch({
-          type: REQUEST_SUCCESS,
+          type: actionTypes.REQUEST_SUCCESS,
           keyState: 'delete',
           payload: data.result,
         });
         dispatch({
-          type: RESET_ACTION,
+          type: actionTypes.RESET_ACTION,
           keyState: 'delete',
         });
       } else {
         dispatch({
-          type: REQUEST_FAILED,
+          type: actionTypes.REQUEST_FAILED,
           keyState: 'delete',
+          payload: null,
+        });
+      }
+    },
+
+  search:
+    ({ entity, options = {} }) =>
+    async (dispatch) => {
+      dispatch({
+        type: actionTypes.REQUEST_LOADING,
+        keyState: 'search',
+        payload: null,
+      });
+
+      let data = await request.search({ entity, options });
+
+      if (data.success === true) {
+        dispatch({
+          type: actionTypes.REQUEST_SUCCESS,
+          keyState: 'search',
+          payload: data.result,
+        });
+      } else {
+        dispatch({
+          type: actionTypes.REQUEST_FAILED,
+          keyState: 'search',
           payload: null,
         });
       }

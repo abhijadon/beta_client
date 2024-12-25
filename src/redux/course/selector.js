@@ -19,7 +19,3 @@ export const selectHistoryItem = createSelector([selectCourse], (course) => cour
 export const selectDeletedItem = createSelector([selectCourse], (course) => course.delete);
 
 export const selectSearchedItems = createSelector([selectCourse], (course) => course.search);
-
-export const selectFilterItems = createSelector([selectCourse], (course) => course.filter);
-
-export const selectSearchItems = createSelector([selectCourse], (course) => course.search);

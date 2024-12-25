@@ -1,11 +1,9 @@
 import { CrudLayout } from '@/layout'
 import React from 'react'
-import AlumniDataTable from "@/components/AlumniDataTable"
+import AlumniDataTable from "@/components/DataTable"
 import { useLayoutEffect, useEffect, useState } from 'react';
 import { Row, Col } from 'antd';
-
 import UpdateForm from '@/components/UpdateForm';
-
 import DataTable from '@/components/DataTable';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectCurrentItem } from '@/redux/crud/selectors';

@@ -5,6 +5,7 @@ export const initialState = {
   isPanelClose: true,
   isBoxCollapsed: false,
   isReadBoxOpen: false,
+  isBrochureBoxOpen: false,
   isAdvancedBoxOpen: false,
   isEditBoxOpen: false,
   isAddBoxOpen: false,
@@ -53,12 +54,14 @@ export function contextReducer(state, action) {
         ...state,
         isBoxCollapsed: !state.isBoxCollapsed,
       };
+
     case actionTypes.OPEN_READ_BOX:
       return {
         ...state,
         isAdvancedBoxOpen: false,
         isEditBoxOpen: false,
         isAddBoxOpen: false,
+        isBrochureBoxOpen: false, // Ensure only one box is open
         isReadBoxOpen: true,
       };
     case actionTypes.CLOSE_READ_BOX:
@@ -72,6 +75,7 @@ export function contextReducer(state, action) {
         isReadBoxOpen: false,
         isEditBoxOpen: false,
         isAddBoxOpen: false,
+        isBrochureBoxOpen: false, // Ensure only one box is open
         isAdvancedBoxOpen: true,
       };
     case actionTypes.CLOSE_ADVANCED_BOX:
@@ -84,8 +88,9 @@ export function contextReducer(state, action) {
         ...state,
         isReadBoxOpen: false,
         isAdvancedBoxOpen: false,
-        isEditBoxOpen: true,
         isAddBoxOpen: false,
+        isBrochureBoxOpen: false, // Ensure only one box is open
+        isEditBoxOpen: true,
       };
     case actionTypes.OPEN_ADD_BOX:
       return {
@@ -93,6 +98,7 @@ export function contextReducer(state, action) {
         isReadBoxOpen: false,
         isAdvancedBoxOpen: false,
         isEditBoxOpen: false,
+        isBrochureBoxOpen: false, // Ensure only one box is open
         isAddBoxOpen: true,
       };
     case actionTypes.CLOSE_EDIT_BOX:
@@ -110,6 +116,23 @@ export function contextReducer(state, action) {
         ...state,
         isReadBoxOpen: !state.isReadBoxOpen,
       };
+
+    // Updated cases for brochure box
+    case actionTypes.OPEN_BROCHURE_BOX:
+      return {
+        ...state,
+        isReadBoxOpen: false,
+        isAdvancedBoxOpen: false,
+        isEditBoxOpen: false,
+        isAddBoxOpen: false,
+        isBrochureBoxOpen: true,
+      };
+    case actionTypes.CLOSE_BROCHURE_BOX:
+      return {
+        ...state,
+        isBrochureBoxOpen: false,
+      };
+
     default: {
       throw new Error(`Unhandled action type: ${action.type}`);
     }

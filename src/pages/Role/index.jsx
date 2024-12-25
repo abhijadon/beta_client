@@ -1,12 +1,13 @@
-// import { DownloadOutlined, LeftOutlined, RightOutlined, PrinterOutlined } from '@ant-design/icons';
 import { Tag, Tooltip } from 'antd';
 import CrudModule from '@/modules/CrudModule/CrudModule';
 import useLanguage from '@/locale/useLanguage';
 import moment from 'moment';
 import RolesForm from '@/forms/Roles_form';
+
 export default function Lead() {
     const translate = useLanguage();
     const entity = 'roles';
+
     // Define color mapping for actions
     const actionColors = {
         read: 'blue',
@@ -15,6 +16,7 @@ export default function Lead() {
         update: 'purple',
         delete: 'red',
     };
+
     const dataTableColumns = [
         {
             title: 'Enabled',
@@ -44,6 +46,39 @@ export default function Lead() {
                 )),
         },
         {
+            title: 'Institutes',
+            dataIndex: 'institutes',
+            key: 'institutes',
+            render: (institutes) =>
+                institutes?.map((institute) => (
+                    <Tooltip key={institute._id} title={institute.description}>
+                        <Tag color="blue">{institute.name}</Tag>
+                    </Tooltip>
+                )) || 'N/A',
+        },
+        {
+            title: 'Universities',
+            dataIndex: 'university',
+            key: 'university',
+            render: (universities) =>
+                universities?.map((university) => (
+                    <Tooltip key={university._id} title={university.description}>
+                        <Tag color="purple">{university.name}</Tag>
+                    </Tooltip>
+                )) || 'N/A',
+        },
+        {
+            title: 'Modes',
+            dataIndex: 'modes',
+            key: 'modes',
+            render: (modes) =>
+                modes?.map((mode) => (
+                    <Tooltip key={mode._id} title={mode.description}>
+                        <Tag color="orange">{mode.name}</Tag>
+                    </Tooltip>
+                )) || 'N/A',
+        },
+        {
             title: 'Created At',
             dataIndex: 'createdAt',
             key: 'createdAt',
@@ -65,14 +100,17 @@ export default function Lead() {
         CREATE_ENTITY: translate('save'),
         UPDATE_ENTITY: translate('update'),
     };
+
     const configPage = {
         entity,
         ...Labels,
     };
+
     const config = {
         ...configPage,
         dataTableColumns,
     };
+
     return (
         <>
             <CrudModule

@@ -1,15 +1,47 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Form, Input, Switch, Select } from 'antd';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import useLanguage from '@/locale/useLanguage';
+import { fetchOptions } from '@/redux/options/actions';
+import {
+  selectSpecificEntityData,
+  selectSpecificEntityLoading,
+} from '@/redux/options/selectors';
 
-export default function UserForm({ roles = [], institutes = [], isUpdateForm = false }) {
+export default function UserForm({ isUpdateForm = false }) {
   const translate = useLanguage();
+  const dispatch = useDispatch();
+
+  // Selectors for roles and institutes data
+  const roles = useSelector((state) => selectSpecificEntityData(state, 'roles'));
+  const rolesLoading = useSelector((state) => selectSpecificEntityLoading(state, 'roles'));
+
+  const institutes = useSelector((state) => selectSpecificEntityData(state, 'institutes'));
+  const institutesLoading = useSelector((state) => selectSpecificEntityLoading(state, 'institutes'));
+
+  // Refs to track if API calls have already been made
+  const isRolesFetched = useRef(false);
+  const isInstitutesFetched = useRef(false);
+
+  useEffect(() => {
+    // Fetch roles data if not already fetched
+    if (!isRolesFetched.current) {
+      dispatch(fetchOptions('roles'));
+      isRolesFetched.current = true;
+    }
+
+    // Fetch institutes data if not already fetched
+    if (!isInstitutesFetched.current) {
+      dispatch(fetchOptions('institutes'));
+      isInstitutesFetched.current = true;
+    }
+  }, [dispatch]);
 
   return (
     <>
       {/* Enabled Field */}
-      <div className='flex items-center justify-between'>
+      <div className="flex items-center justify-between">
         <Form.Item
           label={translate('Enabled')}
           name="enabled"
@@ -28,7 +60,6 @@ export default function UserForm({ roles = [], institutes = [], isUpdateForm = f
           <Switch checkedChildren={<CheckOutlined />} unCheckedChildren={<CloseOutlined />} />
         </Form.Item>
       </div>
-
 
       {/* Full Name Field */}
       <Form.Item
@@ -82,7 +113,8 @@ export default function UserForm({ roles = [], institutes = [], isUpdateForm = f
       >
         <Select
           placeholder={translate('Select role')}
-          options={roles.map((role) => ({
+          loading={rolesLoading}
+          options={roles?.map((role) => ({
             label: role.name,
             value: role._id,
           }))}
@@ -98,7 +130,8 @@ export default function UserForm({ roles = [], institutes = [], isUpdateForm = f
         <Select
           mode="multiple"
           placeholder={translate('Select institutes')}
-          options={institutes.map((institute) => ({
+          loading={institutesLoading}
+          options={institutes?.map((institute) => ({
             label: institute.name,
             value: institute._id,
           }))}

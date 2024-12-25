@@ -13,33 +13,33 @@ export default function University() {
             title: 'Enabled',
             dataIndex: 'enabled',
             key: 'enabled',
-            width: 50, // Set width in pixels
+            width: 50,
             render: (enabled) => (enabled ? <Tag color="green">Yes</Tag> : <Tag color="red">No</Tag>),
         },
         {
             title: 'Removed',
             dataIndex: 'removed',
             key: 'removed',
-            width: 50, // Set width in pixels
+            width: 50,
             render: (removed) => (removed ? <Tag color="red">Yes</Tag> : <Tag color="green">No</Tag>),
         },
         {
             title: 'University Name',
             dataIndex: 'name',
             key: 'name',
-            width: 150, // Set width in pixels
+            width: 150,
         },
         {
             title: 'Description',
             dataIndex: 'description',
             key: 'description',
-            width: 200, // Set width in pixels
+            width: 200,
         },
         {
             title: 'Institutes',
             dataIndex: 'institute',
             key: 'institute',
-            width: 200, // Set width in pixels
+            width: 200,
             render: (institute) => (
                 <>
                     {institute?.map((inst) => (
@@ -51,17 +51,32 @@ export default function University() {
             ),
         },
         {
+            title: 'Modes',
+            dataIndex: 'modes',
+            key: 'modes',
+            width: 200,
+            render: (modes) => (
+                <>
+                    {modes?.map((mode) => (
+                        <Tooltip key={mode._id} title={mode.description}>
+                            <Tag color="purple">{mode.name}</Tag>
+                        </Tooltip>
+                    ))}
+                </>
+            ),
+        },
+        {
             title: 'Created At',
             dataIndex: 'createdAt',
             key: 'createdAt',
-            width: 150, // Set width in pixels
+            width: 150,
             render: (date) => moment(date).format('DD/MM/YYYY'),
         },
         {
             title: 'Updated At',
             dataIndex: 'updatedAt',
             key: 'updatedAt',
-            width: 150, // Set width in pixels
+            width: 150,
             render: (date) => moment(date).format('DD/MM/YYYY'),
         },
     ];

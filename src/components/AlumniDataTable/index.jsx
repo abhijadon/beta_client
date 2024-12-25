@@ -7,7 +7,7 @@ import { IoIosAddCircleOutline } from "react-icons/io";
 import { FaRegEye } from 'react-icons/fa';
 import { TbEdit } from 'react-icons/tb';
 import { RiDeleteBin6Line } from 'react-icons/ri';
-import CourseInform from '@/forms/courseInform';
+import CourseInform from '@/forms/CourseInfo_Form';
 import BrochureModal from "../BrochuresModal";
 import { LiaFolderOpen } from "react-icons/lia";
 import EditCourseInfo from '@/forms/EditCourseInfo';
