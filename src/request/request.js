@@ -173,6 +173,24 @@ const request = {
       return errorHandler(error);
     }
   },
+
+  uploadBrochure: async ({ entity, jsonData }) => {
+    try {
+      const response = await axios.post(`${entity}/uploadbrochure`, jsonData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      console.log('res', response);
+      successHandler(response, {
+        notifyOnSuccess: true,
+        notifyOnFailed: true,
+      });
+      return response.data;
+    } catch (error) {
+      return errorHandler(error);
+    }
+  },
   menu: async ({ entity }) => {
     try {
       const response = await axios.get(`${entity}/menu`);

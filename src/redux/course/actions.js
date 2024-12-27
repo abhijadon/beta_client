@@ -203,6 +203,36 @@ export const course = {
       }
     },
 
+  createDocument:
+    ({ entity, jsonData }) =>
+    async (dispatch) => {
+      dispatch({
+        type: actionTypes.REQUEST_LOADING,
+        keyState: 'create',
+        payload: null,
+      });
+      let data = null;
+      data = await request.uploadBrochure({ entity, jsonData });
+      if (data.success === true) {
+        dispatch({
+          type: actionTypes.REQUEST_SUCCESS,
+          keyState: 'createDocument',
+          payload: data.result,
+        });
+
+        dispatch({
+          type: actionTypes.CURRENT_ITEM,
+          payload: data.result,
+        });
+      } else {
+        dispatch({
+          type: actionTypes.REQUEST_FAILED,
+          keyState: 'createDocument',
+          payload: null,
+        });
+      }
+    },
+
   search:
     ({ entity, options = {} }) =>
     async (dispatch) => {

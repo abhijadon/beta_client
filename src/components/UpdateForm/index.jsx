@@ -12,50 +12,86 @@ export default function UpdateForm({ config, formElements, withUpload = false })
   const translate = useLanguage();
   const dispatch = useDispatch();
   const { current, isLoading, isSuccess } = useSelector(selectUpdatedItem);
+  const data = useSelector((state) => state.options?.data || {}); // Access additional data from Redux state
   const { state, crudContextAction } = useCrudContext();
   const { editBox } = crudContextAction;
   const [form] = Form.useForm();
 
+  console.log('Redux Data:', data);
+
+  // Utility function to map names to IDs
+  const mapNamesToIds = (names, list) => {
+    const items = Array.isArray(list) ? list : list?.data || [];
+    if (!names || !Array.isArray(items)) return [];
+    return names.map((name) => items.find((item) => item.name === name)?._id || name);
+  };
+
+  // Populate form with current data
   useEffect(() => {
     if (current) {
       const newValues = {
         ...current,
         ...(entity === 'university' && {
-          institute: Array.isArray(current.institute) && current.institute.length > 0
-            ? current.institute[0]?.name
-            : "", // Default to an empty string if `institute` is undefined or empty
+          institute: current?.institute?.map((inst) => inst.name),
+          modes: current?.modes?.map((mode) => mode.name),
         }),
         ...(entity === 'user' && {
           role: current?.role?.name || '',
-          workspace: Array.isArray(current.workspace) && current.workspace.length > 0
-            ? current.workspace[0]?.name
-            : "",
-
+          workspace: current?.workspace?.map((wrk) => wrk.name) || [],
         }),
+        ...(entity === 'roles' && {
+          institutes: current?.institutes?.map((inst) => inst.name),
+          university: current?.university?.map((inst) => inst.name),
+          modes: current?.modes?.map((mode) => mode.name),
+        }),
+        ...(entity === 'subcourse' && {
+          course: current?.course?.map((sub) => sub.name),
+        }),
+        ...(entity === 'course' && {
+          university: current?.university?.map((inst) => inst.name),
+        }),
+
       };
-      console.log(newValues)
 
       form.setFieldsValue(newValues);
     }
   }, [current, form, entity]);
 
+  // Submit handler
   const onSubmit = (fieldsValue) => {
     const id = current?._id;
 
-    if (fieldsValue.institute && Array.isArray(current?.institute)) {
-      // Match the `name` from `fieldsValue` to the `name` in `current.institute`
-      const matchedInstitute = current.institute.find(inst => inst.name === fieldsValue.institute);
-      fieldsValue.institute = matchedInstitute ? matchedInstitute._id : null; // Use `_id` if a match is found, otherwise set to null
-    } else {
-      fieldsValue.institute = null; // Default to null if institute is not provided or invalid
-    }
+    // Transform fields based on entity type while preserving existing data
+    const transformedValues = {
+      ...fieldsValue,
+      ...(entity === 'university' && {
+        institute: mapNamesToIds(fieldsValue.institute || form.getFieldValue('institute'), data.institutes),
+        modes: mapNamesToIds(fieldsValue.modes || form.getFieldValue('modes'), data.modes),
+      }),
+      ...(entity === 'user' && {
+        role: mapNamesToIds([fieldsValue.role || form.getFieldValue('role')], data.roles)?.[0],
+        workspace: mapNamesToIds(fieldsValue.workspace || form.getFieldValue('workspace'), data.workspaces),
+      }),
+      ...(entity === 'roles' && {
+        institutes: mapNamesToIds(fieldsValue.institutes || form.getFieldValue('institutes'), data.institutes),
+        university: mapNamesToIds(fieldsValue.university || form.getFieldValue('university'), data.university),
+        modes: mapNamesToIds(fieldsValue.modes || form.getFieldValue('modes'), data.modes),
+      }),
+      ...(entity === 'subcourse' && {
+        course: mapNamesToIds(fieldsValue.course || form.getFieldValue('course'), data.course),
+      }),
+      ...(entity === 'course' && {
+        university: mapNamesToIds(fieldsValue.university || form.getFieldValue('university'), data.university),
+      }),
+    };
 
-    console.log('Final submitted values:', fieldsValue);
+    console.log('Final submitted values:', transformedValues);
 
     // Dispatch the update action
-    dispatch(crud.update({ entity, id, jsonData: fieldsValue, withUpload }));
+    dispatch(crud.update({ entity, id, jsonData: transformedValues, withUpload }));
   };
 
+  // Handle success state
   useEffect(() => {
     if (isSuccess) {
       form.resetFields();
@@ -63,7 +99,7 @@ export default function UpdateForm({ config, formElements, withUpload = false })
       dispatch(crud.resetAction({ actionType: 'update' }));
       dispatch(crud.list({ entity }));
     }
-  }, [isSuccess, dispatch, editBox, entity, form]);
+  }, [isSuccess, form, editBox, dispatch, entity]);
 
   const { isEditBoxOpen } = state;
 
@@ -72,7 +108,7 @@ export default function UpdateForm({ config, formElements, withUpload = false })
   return (
     <div style={show}>
       <Loading isLoading={isLoading}>
-        <Form form={form} layout="vertical" onFinish={onSubmit} initialValues={{ user: { role: 'user' }, teamMembers: [{}] }}>
+        <Form form={form} layout="vertical" onFinish={onSubmit}>
           {formElements}
           <Form.Item
             style={{
@@ -80,7 +116,7 @@ export default function UpdateForm({ config, formElements, withUpload = false })
               paddingRight: '5px',
             }}
           >
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" htmlType="submit" loading={isLoading} disabled={isLoading}>
               {translate('Save')}
             </Button>
           </Form.Item>
@@ -89,7 +125,9 @@ export default function UpdateForm({ config, formElements, withUpload = false })
               display: 'inline-block',
               paddingLeft: '5px',
             }}
-          />
+          >
+            <Button onClick={() => editBox.close()}>{translate('Cancel')}</Button>
+          </Form.Item>
         </Form>
       </Loading>
     </div>

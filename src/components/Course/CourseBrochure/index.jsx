@@ -6,16 +6,15 @@ import {
     selectSpecificEntityLoading,
 } from '@/redux/options/selectors';
 import { fetchOptions } from '@/redux/options/actions';
-import { course } from '@/redux/course/actions';
+import { selectListItems } from '@/redux/course/selector';
 import { MdOutlineFileDownload } from 'react-icons/md';
 import { DeleteOutlined } from '@ant-design/icons';
-import { selectListItems } from '@/redux/course/selector';
 
 const FilterComponent = () => {
     const dispatch = useDispatch();
 
     // Fetch data for list items
-    const { result: listResult, isLoading: listIsLoading } = useSelector(selectListItems);
+    const { result: listResult = {}, isLoading: listIsLoading } = useSelector(selectListItems);
     const { items: brochures = [] } = listResult;
 
     // States for filtered options and selections
@@ -38,7 +37,7 @@ const FilterComponent = () => {
     const coursesLoading = useSelector((state) => selectSpecificEntityLoading(state, 'course'));
     const subcoursesLoading = useSelector((state) => selectSpecificEntityLoading(state, 'subcourse'));
 
-    // Initialize fetching of data
+    // Fetch initial data
     useEffect(() => {
         const controller = new AbortController();
         const signal = controller.signal;
@@ -61,10 +60,7 @@ const FilterComponent = () => {
             university.modes?.includes(selectedMode)
         );
         setFilteredUniversities(filtered || []);
-        setFilteredCourses([]);
-        setFilteredSubcourses([]);
-        setSelectedUniversity(null);
-        setSelectedCourse(null);
+        resetCourseAndSubcourse();
     };
 
     const handleUniversityChange = (selectedUniversity) => {
@@ -85,22 +81,24 @@ const FilterComponent = () => {
         setFilteredSubcourses(filtered || []);
     };
 
-    const handleReset = () => {
-        setSelectedMode(null);
-        setSelectedUniversity(null);
-        setSelectedCourse(null);
-        setFilteredUniversities([]);
+    const resetCourseAndSubcourse = () => {
         setFilteredCourses([]);
         setFilteredSubcourses([]);
+        setSelectedUniversity(null);
+        setSelectedCourse(null);
+    };
+
+    const handleReset = () => {
+        setSelectedMode(null);
+        resetCourseAndSubcourse();
+        setFilteredUniversities([]);
     };
 
     const handleDownload = (url) => {
-        // Logic to handle PDF download
         window.open(url, '_blank');
     };
 
     const handleDelete = (url, university, course, electives) => {
-        // Logic to handle file deletion
         console.log('Deleted:', { url, university, course, electives });
     };
 
@@ -189,9 +187,9 @@ const FilterComponent = () => {
                                     onConfirm={() =>
                                         handleDelete(
                                             brochure.downloadURL,
-                                            brochure.university,
-                                            brochure.course,
-                                            brochure.electives
+                                            brochure.university.namd,
+                                            brochure.course.name,
+                                            brochure.electives.name
                                         )
                                     }
                                     okText="Yes"
@@ -203,9 +201,9 @@ const FilterComponent = () => {
                                     />
                                 </Popconfirm>
                                 <div className="flex flex-col">
-                                    <p className="font-semibold">{brochure.university}</p>
-                                    <p className="text-sm">{brochure.course}</p>
-                                    <p className="text-sm">{brochure.electives}</p>
+                                    <p className="font-semibold">{brochure.university?.name || 'N/A'}</p>
+                                    <p className="text-sm">{brochure.course?.name || 'N/A'}</p>
+                                    <p className="text-sm">{brochure.electives?.name || 'N/A'}</p>
                                 </div>
                             </div>
                         </div>

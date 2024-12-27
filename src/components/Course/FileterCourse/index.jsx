@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Select, Drawer } from 'antd';
 import {
@@ -6,14 +6,16 @@ import {
     selectSpecificEntityLoading,
 } from '@/redux/options/selectors';
 import { fetchOptions } from '@/redux/options/actions';
-import { BiBook, BiReset } from 'react-icons/bi';
+import { BiBook, BiReset, BiUpload } from 'react-icons/bi';
 import CourseBrochure from '../CourseBrochure';
+import UploadBrochure from '../Brochure_Upload';
 
 const FilterComponent = ({ onFilterChange, onResetFilters, config }) => {
     const dispatch = useDispatch();
 
-    // Drawer state for brochure
-    const [isBrochureDrawerOpen, setIsBrochureDrawerOpen] = useState(false);
+    // Drawer states
+    const [isCourseBrochureDrawerOpen, setIsCourseBrochureDrawerOpen] = useState(false);
+    const [isUploadBrochureDrawerOpen, setIsUploadBrochureDrawerOpen] = useState(false);
 
     // Fetch data for modes, universities, courses, and subcourses
     const modes = useSelector((state) => selectSpecificEntityData(state, 'modes'));
@@ -45,10 +47,10 @@ const FilterComponent = ({ onFilterChange, onResetFilters, config }) => {
 
     return (
         <>
-            <div className="flex items-center justify-between gap-2 mb-4">
-                <div className="space-x-2">
+            <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+                <div className="flex flex-wrap gap-2">
                     <Select
-                        className="w-48"
+                        className="w-40 sm:w-48"
                         placeholder="Select Mode"
                         options={toOptions(modes)}
                         onChange={(value) => onFilterChange('mode_info', value)}
@@ -56,7 +58,7 @@ const FilterComponent = ({ onFilterChange, onResetFilters, config }) => {
                         allowClear
                     />
                     <Select
-                        className="w-48"
+                        className="w-40 sm:w-48"
                         placeholder="Select University"
                         options={toOptions(universities)}
                         onChange={(value) => onFilterChange('university', value)}
@@ -64,7 +66,7 @@ const FilterComponent = ({ onFilterChange, onResetFilters, config }) => {
                         allowClear
                     />
                     <Select
-                        className="w-48"
+                        className="w-40 sm:w-48"
                         placeholder="Select Course"
                         options={toOptions(courses)}
                         onChange={(value) => onFilterChange('course', value)}
@@ -72,7 +74,7 @@ const FilterComponent = ({ onFilterChange, onResetFilters, config }) => {
                         allowClear
                     />
                     <Select
-                        className="w-48"
+                        className="w-40 sm:w-48"
                         placeholder="Select Subcourse"
                         options={toOptions(subcourses)}
                         onChange={(value) => onFilterChange('subcourse', value)}
@@ -80,10 +82,16 @@ const FilterComponent = ({ onFilterChange, onResetFilters, config }) => {
                         allowClear
                     />
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center gap-2">
+                    <Button
+                        icon={<BiUpload />}
+                        onClick={() => setIsUploadBrochureDrawerOpen(true)}
+                    >
+                        Upload Brochure
+                    </Button>
                     <Button
                         icon={<BiBook />}
-                        onClick={() => setIsBrochureDrawerOpen(true)}
+                        onClick={() => setIsCourseBrochureDrawerOpen(true)}
                     >
                         Open Brochure
                     </Button>
@@ -96,22 +104,38 @@ const FilterComponent = ({ onFilterChange, onResetFilters, config }) => {
                 </div>
             </div>
 
-            {/* Drawer for Brochure */}
+            {/* Drawer for Course Brochure */}
             <Drawer
-                className={`fixed top-8 left-5 bottom-8 z-50 bg-white w-[800px] shadow-lg h-auto rounded-2xl transform transition-transform duration-500 ease-in-out ${isBrochureDrawerOpen ? 'translate-x-0' : '-translate-x-full'
+                className={`fixed top-8 left-5 bottom-8 z-50 bg-white w-[800px] shadow-lg h-auto rounded-2xl transform transition-transform duration-500 ease-in-out ${isCourseBrochureDrawerOpen ? 'translate-x-0' : '-translate-x-full'
                     }`}
                 title="Course Brochure"
                 placement="left"
-                onClose={() => setIsBrochureDrawerOpen(false)}
-                open={isBrochureDrawerOpen}
+                onClose={() => setIsCourseBrochureDrawerOpen(false)}
+                open={isCourseBrochureDrawerOpen}
                 bodyStyle={{
-                    maxHeight: '100vh', // Adjust drawer height for smaller screens
+                    maxHeight: '100vh',
                     overflowY: 'auto',
                     padding: window.innerWidth > 768 ? '20px' : '10px',
                 }}
             >
-                {/* Include the CourseBrochure component or any content */}
                 <CourseBrochure />
+            </Drawer>
+
+            {/* Drawer for Upload Brochure */}
+            <Drawer
+                className={`fixed top-8 left-5 bottom-8 z-50 bg-white w-[500px] shadow-lg h-auto rounded-2xl transform transition-transform duration-500 ease-in-out ${isUploadBrochureDrawerOpen ? 'translate-x-0' : '-translate-x-full'
+                    }`}
+                title="Upload Brochure"
+                placement="left"
+                onClose={() => setIsUploadBrochureDrawerOpen(false)}
+                open={isUploadBrochureDrawerOpen}
+                bodyStyle={{
+                    maxHeight: '100vh',
+                    overflowY: 'auto',
+                    padding: window.innerWidth > 768 ? '20px' : '10px',
+                }}
+            >
+                <UploadBrochure config={config} onClose={() => setIsUploadBrochureDrawerOpen(false)} />
             </Drawer>
         </>
     );

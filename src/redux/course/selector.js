@@ -10,6 +10,11 @@ export const selectItemById = (itemId) =>
 
 export const selectCreatedItem = createSelector([selectCourse], (course) => course.create);
 
+export const selectcreateDocument = createSelector(
+  [selectCourse],
+  (course) => course.createDocument
+);
+
 export const selectUpdatedItem = createSelector([selectCourse], (course) => course.update);
 
 export const selectReadItem = createSelector([selectCourse], (course) => course.read);

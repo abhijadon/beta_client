@@ -125,17 +125,12 @@ export default function InfoForm({ isUpdateForm = false }) {
                     onChange={handleCourseChange}
                 />
             </Form.Item>
-
-            <Form.Item label="Subcourse" name="subcourse">
+            <Form.Item label="electives" name="electives">
                 <Select
-                    placeholder="Select subcourse"
+                    placeholder="Select electives"
                     loading={subcoursesLoading}
                     options={toOptions(filteredSubcourses)}
                 />
-            </Form.Item>
-
-            <Form.Item label="Electives" name="electives">
-                <Input placeholder="Enter electives" />
             </Form.Item>
             <Form.Item label="Fee" name="fee">
                 <Input placeholder="Enter fee amount" />

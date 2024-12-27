@@ -117,7 +117,6 @@ export default function RolesForm({ isUpdateForm = false }) {
             <Form.Item
                 label={translate('University')}
                 name="university"
-                rules={[{ required: true, message: translate('Please select a university') }]}
             >
                 <Select
                     mode='multiple'
@@ -129,7 +128,6 @@ export default function RolesForm({ isUpdateForm = false }) {
             <Form.Item
                 label={translate('Mode')}
                 name="modes"
-                rules={[{ required: true, message: translate('Please select a mode') }]}
             >
                 <Select
                     mode='multiple'

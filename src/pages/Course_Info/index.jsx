@@ -1,6 +1,8 @@
 import useLanguage from '@/locale/useLanguage';
 import CourseinfoForm from '@/forms/CourseInfo_Form';
 import CourseModule from '@/modules/CourseModules';
+import { Tooltip } from 'antd'; // Import Tooltip from Ant Design
+
 export default function Admin() {
     const translate = useLanguage();
     const entity = 'info';
@@ -10,25 +12,41 @@ export default function Admin() {
             title: 'Mode',
             dataIndex: 'mode_info',
             key: 'mode_info',
-            render: (text) => <span style={{ textTransform: 'capitalize' }}>{text}</span>,
+            render: (text, record) => (
+                <Tooltip title={`Mode: ${record.mode_info.name}`}>
+                    <span style={{ textTransform: 'capitalize' }}>{record.mode_info.name}</span>
+                </Tooltip>
+            ),
         },
         {
             title: 'University',
             dataIndex: 'university',
             key: 'university',
-            render: (text) => <span style={{ textTransform: 'capitalize' }}>{text}</span>,
+            render: (text, record) => (
+                <Tooltip title={`University: ${record.university.name}`}>
+                    <span style={{ textTransform: 'capitalize' }}>{record.university.name}</span>
+                </Tooltip>
+            ),
         },
         {
             title: 'Course',
             dataIndex: 'course',
             key: 'course',
-            render: (text) => <span style={{ textTransform: 'capitalize' }}>{text}</span>,
+            render: (text, record) => (
+                <Tooltip title={`Course: ${record.course.name}`}>
+                    <span style={{ textTransform: 'capitalize' }}>{record.course.name}</span>
+                </Tooltip>
+            ),
         },
         {
             title: 'Electives',
             dataIndex: 'electives',
             key: 'electives',
-            render: (text) => <span style={{ textTransform: 'capitalize' }}>{text}</span>,
+            render: (text, record) => (
+                <Tooltip title={`Elective: ${record.electives.name}`}>
+                    <span style={{ textTransform: 'capitalize' }}>{record.electives.name}</span>
+                </Tooltip>
+            ),
         },
         {
             title: 'Reg fees',

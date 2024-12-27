@@ -92,18 +92,20 @@ export default function UserForm({ isUpdateForm = false }) {
       </Form.Item>
 
       {/* Password Field */}
-      <Form.Item
-        label={translate('Password')}
-        name="password"
-        rules={[
-          {
-            required: !isUpdateForm, // Required only for create form
-            message: translate('Please enter a password'),
-          },
-        ]}
-      >
-        <Input.Password placeholder={translate('Enter password')} />
-      </Form.Item>
+      {!isUpdateForm && (
+        <Form.Item
+          label={translate('Password')}
+          name="password"
+          rules={[
+            {
+              required: !isUpdateForm, // Required only for create form
+              message: translate('Please enter a password'),
+            },
+          ]}
+        >
+          <Input.Password placeholder={translate('Enter password')} />
+        </Form.Item>
+      )}
 
       {/* Role Selection Field */}
       <Form.Item
@@ -124,7 +126,7 @@ export default function UserForm({ isUpdateForm = false }) {
       {/* Institute Selection Field */}
       <Form.Item
         label={translate('Institute')}
-        name="institute"
+        name="workspace"
         rules={[{ required: true, message: translate('Please select an institute') }]}
       >
         <Select

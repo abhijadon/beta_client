@@ -35,6 +35,12 @@ const INITIAL_STATE = {
     isLoading: false,
     isSuccess: false,
   },
+  createDocument: {
+    result: null,
+    current: null,
+    isLoading: false,
+    isSuccess: false,
+  },
   update: {
     result: null,
     current: null,

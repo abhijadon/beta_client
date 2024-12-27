@@ -20,7 +20,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { navigation } from '@/redux/navigation/actions';
 import { selectMenuItems } from '@/redux/navigation/selectors';
 import { useMediaQuery } from 'react-responsive';
-import logoText from '@/style/images/sodeicon.png';
+import logoText from '@/style/images/sode.png';
 import { MdOutlineDoneOutline } from 'react-icons/md';
 const { Header } = Layout;
 
